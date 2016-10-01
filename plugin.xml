@@ -1,0 +1,883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension point="org.eclipse.wst.server.core.runtimeTypes">
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8"
+         name="Spigot 1.8"
+         version="1.8"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8.3"
+         name="Spigot 1.8.3"
+         version="1.8.3"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8.4"
+         name="Spigot 1.8.4"
+         version="1.8.4"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5"
+         name="Spigot 1.8.5"
+         version="1.8.5"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6"
+         name="Spigot 1.8.6"
+         version="1.8.6"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7"
+         name="Spigot 1.8.7"
+         version="1.8.7"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8"
+         name="Spigot 1.8.8"
+         version="1.8.8"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_9"
+         name="Spigot 1.9"
+         version="1.9"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2"
+         name="Spigot 1.9.2"
+         version="1.9.2"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4"
+         name="Spigot 1.9.4"
+         version="1.9.4"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_10"
+         name="Spigot 1.10"
+         version="1.10"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+   	<runtimeTypes
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2"
+         name="Spigot 1.10.2"
+         version="1.10.2"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="jst.java" versions="8.0" />
+    </runtimeTypes>
+    
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.runtimeLocators">
+       <runtimeLocator 
+           id="eu.xworlds.mceclipse.server.runtime.spigot.locator"
+           typeIds="eu.xworlds.mceclipse.server.runtime.spigot.*"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntimeLocator"/> 
+   </extension>
+   
+   <extension
+         point="org.eclipse.jst.server.core.runtimeClasspathProviders">
+       <runtimeClasspathProvider
+           id="eu.xworlds.mceclipse.server.runtime.spigot.runtimeTarget"
+           runtimeTypeIds="eu.xworlds.mceclipse.server.runtime.spigot.*"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntimeClasspathProvider" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.serverTypes">
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8"
+           name="Spigot 1.8"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8_3"
+           name="Spigot 1.8.3"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8_4"
+           name="Spigot 1.8.4"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8_5"
+           name="Spigot 1.8.5"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8_6"
+           name="Spigot 1.8.6"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8_7"
+           name="Spigot 1.8.7"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_8_8"
+           name="Spigot 1.8.8"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_9"
+           name="Spigot 1.9"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_9"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_9_2"
+           name="Spigot 1.9.2"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_9_4"
+           name="Spigot 1.9.4"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_10"
+           name="Spigot 1.10"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_10"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_10_2"
+           name="Spigot 1.10.2"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.serverLocators">
+       <serverLocator 
+           id="eu.xworlds.mceclipse.server.spigot.locator"
+           supportsRemoteHosts="false"
+           typeIds="eu.xworlds.mceclipse.server.spigot.*"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerLocator"/> 
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.launchableAdapters">
+       <launchableAdapter
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotLaunchableAdapterDelegate"
+           id="eu.xworlds.mceclipse.server.spigot.plugin"/> 
+   </extension>
+   
+   <extension point="org.eclipse.debug.core.sourcePathComputers">
+       <sourcePathComputer
+           id="eu.xworlds.mceclipse.server.spigot.sourcePathComputer"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotSourcePathComputors"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+       <launchConfigurationType 
+         id="eu.xworlds.mceclipse.server.spigot.launchConfigurationType" 
+         name="Spigot server" 
+         delegate="eu.xworlds.mceclipse.server.runtime.internal.SpigotLaunchConfigurationDelegate" 
+         modes="run, debug, profile" 
+         sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector" 
+         sourcePathComputerId="eu.xworlds.mceclipse.server.spigot.sourcePathComputer"/> 
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.publishTasks">
+         <publishTask 
+          id="eu.xworlds.mceclipse.server.spigot.publishTask" 
+          typeIds="eu.xworlds.mceclipse.server.spigot.*" 
+          class="eu.xworlds.mceclipse.server.runtime.internal.SpigotPublishTask"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+       <runtime-component-type id="eu.xworlds.mceclipse.server.spigot" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8.3" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8.4" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8.5" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8.6" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8.7" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.8.8" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.9" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.9.2" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.9.4" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.10" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.10.2" />
+       <adapter>
+           <runtime-component id="eu.xworlds.mceclipse.server.spigot" />
+           <factory class="org.eclipse.jst.server.core.internal.RuntimeClasspathProvider$Factory" />
+           <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider" />
+       </adapter>
+       <adapter>
+           <runtime-component id="eu.xworlds.mceclipse.server.spigot" />
+           <factory class="org.eclipse.jst.server.ui.internal.RuntimeLabelProvider$Factory" />
+           <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider" />
+       </adapter>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8.3" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8.4" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8.5" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8.6" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8.7" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8.8" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.9" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.9.2" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.9.4" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.10" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.10.2" />
+          <facet id="spigot.plugin" version="1.0" />
+          <facet id="jst.java" version="8.0" />
+       </supported>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.defaultFacets">
+         <default-facets>
+             <runtime-component id="eu.xworlds.mceclipse.server.spigot" />
+             <facet id="spigot.plugin" version="1.0" />
+         </default-facets>
+   </extension>
+   
+   <extension
+         point="org.eclipse.jst.server.core.runtimeFacetMappings">
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8.3" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8.4" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8.5" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8.6" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8.7" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.8.8" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_9"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.9" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.9.2" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.9.4" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_10"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.10" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.10.2" />
+   </extension>
+   
+   <extension point="org.eclipse.wst.server.core.installableRuntimes">
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.zip" 
+          archivePath="spigot-1.8"
+          archiveSize="17964747"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.3.zip" 
+          archivePath="spigot-1.8.3"
+          archiveSize="19696944"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.4.zip" 
+          archivePath="spigot-1.8.4"
+          archiveSize="17796737"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.5.zip" 
+          archivePath="spigot-1.8.5"
+          archiveSize="17796738"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.6.zip" 
+          archivePath="spigot-1.8.6"
+          archiveSize="17796716"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.7.zip" 
+          archivePath="spigot-1.8.7"
+          archiveSize="17796639"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.8.8.zip" 
+          archivePath="spigot-1.8.8"
+          archiveSize="17796684"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_9" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.9.zip" 
+          archivePath="spigot-1.9"
+          archiveSize="18641013"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.9.2.zip" 
+          archivePath="spigot-1.9.2"
+          archiveSize="18653196"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.9.4.zip" 
+          archivePath="spigot-1.9.4"
+          archiveSize="19080366"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_10" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.10.zip" 
+          archivePath="spigot-1.10"
+          archiveSize="19157850"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.10.2.zip" 
+          archivePath="spigot-1.10.2"
+          archiveSize="19157855"
+          fileCount="3"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.facets">
+      <category
+            id="eu.xworlds.mceclipse.server.facets.category">
+         <label>
+            Minecraft Plugin Development
+         </label>
+      </category>
+      <project-facet
+            id="spigot.plugin">
+         <default-version
+               version="1.0">
+         </default-version>
+         <label>
+            Spigot plugin
+         </label>
+         <member
+               category="eu.xworlds.mceclipse.server.facets.category">
+         </member>
+      </project-facet>
+      <project-facet-version
+            facet="spigot.plugin"
+            version="1.0">
+      </project-facet-version>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.ui.serverImages">
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8_3.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8_3" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8_4.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8_4" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8_5.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8_5" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8_6.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8_6" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8_7.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8_7" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_8_8.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_8_8" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_9.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_9" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_9_2.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_9_2" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_9_4.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_9_4" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_10.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_10" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_10_2.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_10_2" />
+         	
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_9.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_9" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_10.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_10" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+         <propertyTester
+         	id="eu.xworlds.mceclipse.server.spigot.ui.propertyTester"
+         	namespace="eu.xworlds.mceclipse.server.spigot.ui"
+         	properties="hasConfiguration"
+         	type="java.lang.Object"
+         	class="eu.xworlds.mceclipse.server.ui.internal.SpigotConfigurationPropertyTester" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.ui.editorPages">
+         <!-- <page
+             id="eu.xworlds.mceclipse.server.spigot.configuration.editor.plugins"
+             order="20"
+             name="Spigot plugins"
+             typeIds="eu.xworlds.mceclipse.server.spigot.*"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotPluginsConfigurationEditorPart">
+             <enablement>
+                 <test property="eu.xworlds.mceclipse.server.spigot.ui.hasConfiguration" value="true" />
+             </enablement>
+         </page> -->
+   </extension>
+   
+   <extension point="org.eclipse.wst.server.ui.editorPageSections">
+       <section
+           id="eu.xworlds.mceclipse.server.spigot.configuration.editor.instance"
+           order="0"
+           insertionId="org.eclipse.wst.server.editor.overview.left"
+           typeIds="eu.xworlds.mceclipse.server.spigot.*"
+           class="eu.xworlds.mceclipse.server.ui.internal.SpigotLocationEditorSection"/>
+       <section
+           id="eu.xworlds.mceclipse.server.spigot.configuration.editor.general"
+           order="5"
+           insertionId="org.eclipse.wst.server.editor.overview.left"
+           typeIds="eu.xworlds.mceclipse.server.spigot.*"
+           class="eu.xworlds.mceclipse.server.ui.internal.SpigotGeneralEditorSection"/>
+       <section
+           id="eu.xworlds.mceclipse.server.spigot.configuration.editor.right"
+           order="10"
+           insertionId="org.eclipse.wst.server.editor.overview.left"
+           typeIds="eu.xworlds.mceclipse.server.spigot.*"
+           class="eu.xworlds.mceclipse.server.ui.internal.SpigotPortEditorSection">
+             <enablement>
+                 <test property="eu.xworlds.mceclipse.server.spigot.ui.hasConfiguration" value="true" />
+             </enablement>
+       </section>
+       <!-- <section
+           id="eu.xworlds.mceclipse.server.spigot.configuration.editor.right"
+           order="20"
+           insertionId="org.eclipse.wst.server.editor.overview.left"
+           typeIds="eu.xworlds.mceclipse.server.spigot.*"
+           class="eu.xworlds.mceclipse.server.ui.internal.SpigotServerPropertiesEditorSection">
+             <enablement>
+                 <test property="eu.xworlds.mceclipse.server.spigot.ui.hasConfiguration" value="true" />
+             </enablement>
+       </section> -->
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.ui.wizardFragments">
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_3"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_4"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_5"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_6"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_7"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_8_8"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_9"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_9"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_9_2"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_9_4"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_10"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_10"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_10_2"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+         <launchConfigurationTypeImage
+             id="eu.xworlds.mceclipse.server.spigot.launchConfigurationType.image"
+             configTypeId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+             icons="icons/obj16/minecraft.png" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+         <launchConfigurationTabGroup
+             id="eu.xworlds.mceclipse.server.spigot.launchConfigurationTabGroup"
+             type="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotLaunchConfigurationTabGroup" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.common.project.facet.ui.images">
+      <image path="icons/obj16/minecraft.png" runtime-component-type="eu.xworlds.mceclipse.server.spigot" />
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         <!--<objectContribution
+      adaptable="true"
+      id="org.eclipse.jst.server.tomcat.ui.serveractions"
+      objectClass="org.eclipse.wst.server.core.IServer">
+      <visibility>
+          <objectState name="serverType" value="org.eclipse.jst.server.tomcat.*"/>
+      </visibility>
+      <action 
+        class="org.eclipse.jst.server.tomcat.ui.internal.actions.CleanWorkDirAction"
+        enablesFor="1"
+        id="org.eclipse.jst.server.tomcat.ui.cleanserverworkdir"
+        label="%cleanTomcatWorkDir">
+      </action>
+    </objectContribution>
+    <objectContribution
+      adaptable="true"
+      id="org.eclipse.jst.server.tomcat.ui.serveractions"
+      objectClass="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+      <visibility>
+        <and>
+          <objectState name="serverType" value="org.eclipse.jst.server.tomcat.*"/>
+          <objectState name="moduleType" value="jst.web"/>
+        </and>
+      </visibility>
+      <action
+        class="org.eclipse.jst.server.tomcat.ui.internal.actions.CleanWorkDirAction"
+        enablesFor="1"
+        id="org.eclipse.jst.server.tomcat.ui.cleanmoduleworkdir"
+        label="%cleanTomcatModuleWorkDir">
+      </action>
+    </objectContribution>
+         -->
+   </extension>
+   
+   <extension point="org.eclipse.wst.server.core.publishers">
+   	<!--<publisher
+        id="eu.xworlds.mceclipse.server.spigot.ui.context"
+        typeIds="eu.xworlds.mceclipse.server.spigot.*"
+        name="Update plugins"
+        order=""
+        class="org.eclipse.jst.server.tomcat.ui.internal.ContextPublisherDelegate"/>-->
+   </extension>
+
+</plugin>
