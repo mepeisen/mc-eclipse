@@ -52,7 +52,7 @@ public class SpigotLaunchConfigurationDelegate extends AbstractJavaLaunchConfigu
             runner = vm.getVMRunner(ILaunchManager.RUN_MODE);
         }
         
-        final File workingDir = verifyWorkingDirectory(configuration);
+        final File workingDir = server.getServerConfiguration().getLocation().toFile();
         String workingDirName = null;
         if (workingDir != null)
         {

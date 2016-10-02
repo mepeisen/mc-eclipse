@@ -4,12 +4,9 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.io.FileNotFoundException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.regex.Pattern;
 
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
@@ -73,9 +70,18 @@ public class SpigotPingThread implements IStreamListener
         {
             // ignore
         }
-        for (final IProcess process : this.server.getLaunch().getProcesses())
+        final ILaunch launch = this.server.getLaunch();
+        if (launch != null)
         {
-            process.getStreamsProxy().getOutputStreamMonitor().addListener(this);
+            final IProcess[] processes = launch.getProcesses();
+            if (processes != null)
+            {
+                for (final IProcess process : this.server.getLaunch().getProcesses())
+                {
+                    // System.out.println("Attach ping thread to process " + process);
+                    process.getStreamsProxy().getOutputStreamMonitor().addListener(this);
+                }
+            }
         }
         while (!stop)
         {
@@ -123,9 +129,16 @@ public class SpigotPingThread implements IStreamListener
             }
         }
 
-        for (final IProcess process : this.server.getLaunch().getProcesses())
+        if (launch != null)
         {
-            process.getStreamsProxy().getOutputStreamMonitor().removeListener(this);
+            final IProcess[] processes = launch.getProcesses();
+            if (processes != null)
+            {
+                for (final IProcess process : processes)
+                {
+                    process.getStreamsProxy().getOutputStreamMonitor().removeListener(this);
+                }
+            }
         }
     }
     
@@ -138,12 +151,14 @@ public class SpigotPingThread implements IStreamListener
         stop = true;
     }
     
-    private static final Pattern PATTERN = Pattern.compile(".*Done ([0-9,]*s)! For help, type \"help\" or \"\\?\".*");
+    private static final Pattern PATTERN = Pattern.compile(".*Done \\([0-9,\\.]*s\\)! For help, type \"help\" or \"\\?\".*");
 
     @Override
     public void streamAppended(String text, IStreamMonitor paramIStreamMonitor)
     {
-        this.success |= PATTERN.matcher(text).matches();
+        // System.out.println("streamAppended " + text);
+        // TODO seems to not like regex :-(
+        this.success |= PATTERN.matcher(text.trim()).matches() || (text.contains("Done") && text.contains("For help"));
     }
     
 }

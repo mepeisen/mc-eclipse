@@ -515,7 +515,7 @@ public class SpigotServerBehaviour extends ServerBehaviourDelegate
         // ping server to check for startup
         try
         {
-            ping = new SpigotPingThread(getServer(), -1, this);
+            ping = new SpigotPingThread(getServer(), 50*4, this);
         }
         catch (Exception e)
         {
@@ -555,7 +555,7 @@ public class SpigotServerBehaviour extends ServerBehaviourDelegate
             
             for (final IProcess process : getServer().getLaunch().getProcesses())
             {
-                process.getStreamsProxy().write("/stop\n");
+                process.getStreamsProxy().write("stop\n");
             }
         }
         catch (Exception e)
