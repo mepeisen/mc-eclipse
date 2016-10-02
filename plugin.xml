@@ -629,14 +629,10 @@
       </project-facet>
       <project-facet-version facet="spigot.plugin" version="1.0">
         <constraint>
-            <and>
               <requires facet="jst.java" version="[1.8" />
-              <or>
-        	    <conflicts facet="wst.web" />
-        	    <conflicts facet="jst.web" />
-        	    <conflicts facet="spigot.lib" />
-        	  </or>
-        	</and>
+        	  <conflicts facet="wst.web" />
+        	  <conflicts facet="jst.web" />
+        	  <conflicts facet="spigot.lib" />
         </constraint>
       </project-facet-version>
       <action facet="spigot.plugin" type="install" id="spigot.plugin.install">
@@ -658,14 +654,10 @@
       </project-facet>
       <project-facet-version facet="spigot.lib" version="1.0">
         <constraint>
-            <and>
               <requires facet="jst.java" version="[1.8" />
-              <or>
-        	    <conflicts facet="wst.web" />
-        	    <conflicts facet="jst.web" />
-        	    <conflicts facet="spigot.plugin" />
-        	  </or>
-        	</and>
+        	  <conflicts facet="wst.web" />
+        	  <conflicts facet="jst.web" />
+        	  <conflicts facet="spigot.lib" />
         </constraint>
       </project-facet-version>
       <action facet="spigot.lib" type="install" id="spigot.lib.install">

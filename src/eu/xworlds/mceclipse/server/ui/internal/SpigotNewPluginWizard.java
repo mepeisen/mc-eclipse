@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.INewWizard;
 
-import eu.xworlds.mceclipse.McEclipsePlugin;
+import eu.xworlds.mceclipse.SpigotProjectTool;
 
 /**
  * @author mepeisen
@@ -151,11 +151,10 @@ public class SpigotNewPluginWizard extends AbstractMavenProjectWizard implements
                     job = new AbstractCreateMavenProjectJob(
                             NLS.bind(Messages.wizardProjectJobCreatingProject, projectName), this.workingSets) {
                         protected List<IProject> doCreateMavenProjects(IProgressMonitor monitor) throws CoreException {
-                            model.getProperties().setProperty("maven.compiler.source", "1.8");
-                            model.getProperties().setProperty("maven.compiler.target", "1.8");
+                            SpigotProjectTool.prepareModelForSpigotPlugin(model);
                             MavenPlugin.getProjectConfigurationManager().createSimpleProject(project, location, model,
                                     archetype, SpigotNewPluginWizard.this.importConfiguration, monitor);
-                            McEclipsePlugin.enableSpigotPluginFacet(project, monitor);
+                            SpigotProjectTool.enableSpigotPluginFacet(project, monitor);
                             // TODO Create plugin.yml etc.
                             return Arrays.asList(new IProject[] { project });
                         }
@@ -176,7 +175,7 @@ public class SpigotNewPluginWizard extends AbstractMavenProjectWizard implements
                             for (final Object prj : projects)
                             {
                                 // TODO Enable on all modules?
-                                McEclipsePlugin.enableSpigotPluginFacet((IProject) prj, monitor);
+                                SpigotProjectTool.enableSpigotPluginFacet((IProject) prj, monitor);
                             }
                             return projects;
                         }
