@@ -435,15 +435,14 @@ public class SpigotServer extends ServerDelegate implements ISpigotServerWorking
     @Override
     public IModule[] getRootModules(IModule module) throws CoreException
     {
-//        if ("jst.web".equals(module.getModuleType().getId()))
-//        {
-//            IStatus status = canModifyModules(new IModule[] { module }, null);
-//            if (status == null || !status.isOK())
-//                throw new CoreException(status);
-//            return new IModule[] { module };
-//        }
-//        
-//        return J2EEUtil.getWebModules(module, null);
+        if ("spigot.plugin".equals(module.getModuleType().getId()) || "spigot.lib".equals(module.getModuleType().getId()))
+        {
+            IStatus status = canModifyModules(new IModule[] { module }, null);
+            if (status == null || !status.isOK())
+                throw new CoreException(status);
+            return new IModule[] { module };
+        }
+        
         return new IModule[0];
     }
     

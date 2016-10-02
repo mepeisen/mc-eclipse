@@ -173,7 +173,7 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
     private void loadPropertiesFromFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
     {
         props.clear();
-        try (final InputStream in = file.getContents())
+        try (final InputStream in = file.getContents(true))
         {
             props.load(in);
         }
@@ -184,12 +184,12 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         byte[] contents = null;
         try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
-            this.properties.store(baos, null);
+            props.store(baos, null);
             contents = baos.toByteArray();
         }
         if (file.exists())
         {
-            file.setContents(new ByteArrayInputStream(contents), 0, monitor);
+            file.setContents(new ByteArrayInputStream(contents), true, true, monitor);
         }
         else
         {
@@ -271,7 +271,14 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
     public void addSpigotPlugin(int i, SpigotPlugin module2)
     {
         final List<SpigotPlugin> plugins = getPluginsFromConfig();
-        plugins.add(i, module2);
+        if (i == -1)
+        {
+            plugins.add(module2);
+        }
+        else
+        {
+            plugins.add(i, module2);
+        }
         toPluginsConfig(plugins);
     }
 

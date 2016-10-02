@@ -4,10 +4,19 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class McEclipsePlugin extends AbstractUIPlugin
 {
@@ -76,5 +85,22 @@ public class McEclipsePlugin extends AbstractUIPlugin
         }
     }
 
+    public static void enableSpigotPluginFacet(IProject project, IProgressMonitor m) throws CoreException
+    {
+        final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
+        final IFacetedProject faceted = ProjectFacetsManager.create(project, true, monitor);
+        final IProjectFacet facet = ProjectFacetsManager.getProjectFacet("spigot.plugin");
+        final IProjectFacetVersion pfv = facet.getVersion("1.0");
+        faceted.installProjectFacet(pfv, null, monitor);
+    }
+
+    public static void enableSpigotLibraryFacet(IProject project, IProgressMonitor m) throws CoreException
+    {
+        final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
+        final IFacetedProject faceted = ProjectFacetsManager.create(project, true, monitor);
+        final IProjectFacet facet = ProjectFacetsManager.getProjectFacet("spigot.lib");
+        final IProjectFacetVersion pfv = facet.getVersion("1.0");
+        faceted.installProjectFacet(pfv, null, monitor);
+    }
     
 }

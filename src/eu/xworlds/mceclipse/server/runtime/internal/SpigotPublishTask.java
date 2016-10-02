@@ -125,7 +125,7 @@ public class SpigotPublishTask extends PublishTaskDelegate
                 }
                 jpd.setElements(elements.toArray(new Object[elements.size()]));
                 
-                final IJarExportRunnable runnable = jpd.createJarExportRunnable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+                final IJarExportRunnable runnable = jpd.createJarExportRunnable(null /*PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()*/);
                 try
                 {
                     runnable.run(monitor);
