@@ -33,7 +33,7 @@ import eu.xworlds.mceclipse.server.runtime.internal.command.SetServeModulesWitho
  *
  */
 public class SpigotGeneralEditorSection extends ServerEditorSection {
-    protected SpigotServer tomcatServer;
+    protected SpigotServer spigotServer;
 
     protected Button noPublish;
     protected Button debug;
@@ -113,7 +113,7 @@ public class SpigotGeneralEditorSection extends ServerEditorSection {
                 if (updating)
                     return;
                 updating = true;
-                execute(new SetServeModulesWithoutPublishCommand(tomcatServer, noPublish.getSelection()));
+                execute(new SetServeModulesWithoutPublishCommand(spigotServer, noPublish.getSelection()));
                 // Indicate this setting has changed
                 noPublishChanged = true;
                 updating = false;
@@ -132,7 +132,7 @@ public class SpigotGeneralEditorSection extends ServerEditorSection {
                 if (updating)
                     return;
                 updating = true;
-                execute(new SetDebugModeCommand(tomcatServer, debug.getSelection()));
+                execute(new SetDebugModeCommand(spigotServer, debug.getSelection()));
                 updating = false;
             }
         });
@@ -156,7 +156,7 @@ public class SpigotGeneralEditorSection extends ServerEditorSection {
         super.init(site, input);
         
         if (server != null) {
-            tomcatServer = (SpigotServer) server.loadAdapter(SpigotServer.class, null);
+            spigotServer = (SpigotServer) server.loadAdapter(SpigotServer.class, null);
             addChangeListener();
         }
         initialize();
@@ -166,26 +166,28 @@ public class SpigotGeneralEditorSection extends ServerEditorSection {
      * Initialize the fields in this editor.
      */
     protected void initialize() {
-        if (tomcatServer == null)
+        if (spigotServer == null)
+            return;
+        if (noPublish == null)
             return;
         updating = true;
-        ISpigotVersionHandler tvh = tomcatServer.getSpigotVersionHandler();
+        ISpigotVersionHandler tvh = spigotServer.getSpigotVersionHandler();
         
         String label = NLS.bind("Serve modules without publishing {0}", "");
         noPublish.setText(label);
-        noPublish.setSelection(tomcatServer.isServeModulesWithoutPublish());
+        noPublish.setSelection(spigotServer.isServeModulesWithoutPublish());
         if (readOnly)
             noPublish.setEnabled(false);
         else
             noPublish.setEnabled(true);
         
-        label = NLS.bind("Enable Tomcat debug logging {0}", "");
+        label = NLS.bind("Enable Spigot debug logging {0}", "");
         debug.setText(label);
         if (readOnly)
             debug.setEnabled(false);
         else {
             debug.setEnabled(true);
-            debug.setSelection(tomcatServer.isDebug());
+            debug.setSelection(spigotServer.isDebug());
         }
         
         updating = false;
@@ -198,7 +200,7 @@ public class SpigotGeneralEditorSection extends ServerEditorSection {
         // If serve modules without publishing has changed, request clean publish to be safe
         if (noPublishChanged) {
             // If server is running, abort the save since clean publish won't succeed
-            if (tomcatServer.getServer().getServerState() != IServer.STATE_STOPPED) {
+            if (spigotServer.getServer().getServerState() != IServer.STATE_STOPPED) {
                 return new IStatus [] {
                         new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID,
                                 NLS.bind("The server must be stopped before a change to the \"{0}\" setting can be saved.",
@@ -206,7 +208,7 @@ public class SpigotGeneralEditorSection extends ServerEditorSection {
                 };
             }
             // Force a clean publish
-            tomcatServer.getServer().publish(IServer.PUBLISH_CLEAN, null, null, null);
+            spigotServer.getServer().publish(IServer.PUBLISH_CLEAN, null, null, null);
             noPublishChanged = false;
         }
         // use default implementation to return success

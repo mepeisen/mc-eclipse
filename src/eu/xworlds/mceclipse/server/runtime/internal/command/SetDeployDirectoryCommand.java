@@ -18,7 +18,7 @@ public class SetDeployDirectoryCommand extends ServerCommand
     /**
      * Constructs command to set the deploy directory.
      * 
-     * @param server a Tomcat server
+     * @param server a spigot server
      * @param deployDir deployment directory to set
      */
 

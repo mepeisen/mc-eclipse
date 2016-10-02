@@ -383,11 +383,11 @@ public class SpigotLocationEditorSection extends ServerEditorSection {
         updating = true;
 
         IRuntime runtime = server.getRuntime();
-        // If not Tomcat 3.2, update description to mention catalina.base
-        if (runtime != null && runtime.getRuntimeType().getId().indexOf("32") < 0)
-            section.setDescription("Specify the server path (continaing spigot.jar) and deploy path.");
         if (runtime != null)
+        {
+            section.setDescription("Specify the server path (continaing spigot.jar) and deploy path.");
             installDirPath = runtime.getLocation();
+        }
 
         // determine if editing of locations is allowed
         allowRestrictedEditing = false;

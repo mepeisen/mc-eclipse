@@ -55,7 +55,7 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
                 {
                     try (final JarFile jar = new JarFile(f))
                     {
-                        final ZipEntry entry = jar.getEntry("/META-INF/maven/org.spigotmc/spigot/pom.properties"); //$NON-NLS-1$
+                        final ZipEntry entry = jar.getEntry("META-INF/maven/org.spigotmc/spigot/pom.properties"); //$NON-NLS-1$
                         if (entry != null && !entry.isDirectory())
                         {
                             final Properties props = new Properties();

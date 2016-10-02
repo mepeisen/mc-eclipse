@@ -22,9 +22,9 @@ public class SpigotConfigurationPropertyTester extends PropertyTester
         try
         {
             IServerAttributes server = (IServerAttributes) receiver;
-            SpigotServer tomcatServer = (SpigotServer) server.loadAdapter(SpigotServer.class, null);
-            if (tomcatServer != null)
-                return tomcatServer.getServerConfiguration() != null;
+            SpigotServer spigotServer = (SpigotServer) server.loadAdapter(SpigotServer.class, null);
+            if (spigotServer != null)
+                return spigotServer.getServerConfiguration() != null;
         }
         catch (@SuppressWarnings("unused") Exception e)
         {

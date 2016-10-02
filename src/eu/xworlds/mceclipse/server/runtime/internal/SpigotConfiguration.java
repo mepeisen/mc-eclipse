@@ -6,8 +6,12 @@ package eu.xworlds.mceclipse.server.runtime.internal;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -63,7 +68,38 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
      */
     public void load(IFolder f, IProgressMonitor m) throws CoreException
     {
-        load(f.getFullPath(), m);
+        try
+        {
+            final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
+            monitor.beginTask("Loading", 3);
+            if (f == null)
+            {
+                monitor.done();
+                return;
+            }
+            
+            // load server.properties
+            final IFile serverProperties = f.getFile("server.properties"); //$NON-NLS-1$
+            this.loadPropertiesFromFile(this.properties, serverProperties, monitor);
+            monitor.worked(1);
+            
+            // load eclipse.pluginproperties
+            final IFile eclipsePluginProperties = f.getFile("eclipse.plugin.properties"); //$NON-NLS-1$
+            if (eclipsePluginProperties.exists())
+            {
+                this.loadPropertiesFromFile(this.pluginProperties, eclipsePluginProperties, monitor);
+            }
+            monitor.worked(1);
+            
+            // fetch port
+            this.portNumber = Integer.parseInt(this.properties.getProperty("server-port")); //$NON-NLS-1$
+            
+            monitor.done();
+        }
+        catch (Exception e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Cannot load config", e)); 
+        }
     }
 
     /**
@@ -84,18 +120,15 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
             }
             
             // load server.properties
-            this.properties = new Properties();
-            try (final InputStream in = new FileInputStream(path.append("server.properties").toFile())) //$NON-NLS-1$
-            {
-                this.properties.load(in);
-            }
+            final File serverProperties = path.append("server.properties").toFile(); //$NON-NLS-1$
+            this.loadPropertiesFromFile(this.properties, serverProperties);
             monitor.worked(1);
             
             // load eclipse.pluginproperties
-            this.pluginProperties = new Properties();
-            try (final InputStream in = new FileInputStream(path.append("eclipse.plugin.properties").toFile())) //$NON-NLS-1$
+            final File eclipsePluginProperties = path.append("eclipse.plugin.properties").toFile(); //$NON-NLS-1$
+            if (eclipsePluginProperties.exists())
             {
-                this.pluginProperties.load(in);
+                this.loadPropertiesFromFile(this.pluginProperties, eclipsePluginProperties);
             }
             monitor.worked(1);
             
@@ -119,15 +152,84 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
     {
         load(path, monitor);
     }
+    
+    private void loadPropertiesFromFile(final Properties props, File file) throws IOException
+    {
+        props.clear();
+        try (final InputStream in = new FileInputStream(file))
+        {
+            props.load(in);
+        }
+    }
+    
+    private void savePropertiesToFile(final Properties props, File file) throws IOException
+    {
+        try (final FileOutputStream fos = new FileOutputStream(file))
+        {
+            props.store(fos, null);
+        }
+    }
+    
+    private void loadPropertiesFromFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
+    {
+        props.clear();
+        try (final InputStream in = file.getContents())
+        {
+            props.load(in);
+        }
+    }
+    
+    private void savePropertiesToFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
+    {
+        byte[] contents = null;
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
+            this.properties.store(baos, null);
+            contents = baos.toByteArray();
+        }
+        if (file.exists())
+        {
+            file.setContents(new ByteArrayInputStream(contents), 0, monitor);
+        }
+        else
+        {
+            file.create(new ByteArrayInputStream(contents), true, monitor);
+        }
+    }
 
     /**
      * @param serverConfiguration
-     * @param monitor
+     * @param m
      * @throws CoreException 
      */
-    public void save(IFolder serverConfiguration, IProgressMonitor monitor) throws CoreException
+    public void save(IFolder serverConfiguration, IProgressMonitor m) throws CoreException
     {
-        save(serverConfiguration.getFullPath(), monitor);
+        try
+        {
+            final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
+            monitor.beginTask("Saving", 3);
+            
+            if (!serverConfiguration.exists())
+            {
+                serverConfiguration.create(true, true, monitor);
+            }
+            monitor.worked(1);
+            
+            // save server.properties
+            final IFile serverProperties = serverConfiguration.getFile("server.properties"); //$NON-NLS-1$
+            this.savePropertiesToFile(this.properties, serverProperties, monitor);
+            monitor.worked(1);
+            
+            // save eclipse.plugin.properties
+            final IFile eclipsePluginProperties = serverConfiguration.getFile("eclipse.plugin.properties"); //$NON-NLS-1$
+            this.savePropertiesToFile(this.pluginProperties, eclipsePluginProperties, monitor);
+            
+            monitor.done();
+        }
+        catch (Exception e)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Cannot save config", e)); 
+        }
     }
 
     /**
@@ -149,17 +251,13 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
             monitor.worked(1);
             
             // save server.properties
-            try (final FileOutputStream fos = new FileOutputStream(path.append("server.properties").toFile())) //$NON-NLS-1$
-            {
-                this.properties.store(fos, null);
-            }
+            final File serverProperties = path.append("server.properties").toFile(); //$NON-NLS-1$
+            this.savePropertiesToFile(this.properties, serverProperties);
             monitor.worked(1);
             
             // save eclipse.plugin.properties
-            try (final FileOutputStream fos = new FileOutputStream(path.append("eclipse.plugin.properties").toFile())) //$NON-NLS-1$
-            {
-                this.pluginProperties.store(fos, null);
-            }
+            final File eclipsePluginProperties = path.append("eclipse.plugin.properties").toFile(); //$NON-NLS-1$
+            this.savePropertiesToFile(this.pluginProperties, eclipsePluginProperties);
             
             monitor.done();
         }

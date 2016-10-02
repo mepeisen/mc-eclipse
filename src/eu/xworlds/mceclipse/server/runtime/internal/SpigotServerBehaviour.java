@@ -1086,7 +1086,7 @@ public class SpigotServerBehaviour extends ServerBehaviourDelegate
      */
     public IPath getServerDeployDirectory()
     {
-        return getSpigotServer().getRuntimeBaseDirectory().append(this.getServerDeployDirectory());
+        return getSpigotServer().getRuntimeBaseDirectory().append(getSpigotServer().getDeployDirectory());
     }
     
 //    /**

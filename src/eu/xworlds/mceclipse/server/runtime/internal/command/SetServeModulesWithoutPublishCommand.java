@@ -17,7 +17,7 @@ public class SetServeModulesWithoutPublishCommand extends ServerCommand {
     /**
      * SetServeModulesWithoutPublishCommand constructor comment.
      * 
-     * @param server a Tomcat server
+     * @param server a spigot server
      * @param smwp <code>true</code> to enable serving modules without
      * publishing. Otherwise modules are served with standard publishing.
      */

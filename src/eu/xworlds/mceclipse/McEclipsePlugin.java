@@ -18,7 +18,7 @@ public class McEclipsePlugin extends AbstractUIPlugin
     
     public static final String PLUGIN_ID = "mc-eclipse-plugin";
     
-    public static final String IMG_WIZ_TOMCAT = "wizSpigot";
+    public static final String IMG_WIZ_SPIGOT = "wizSpigot";
     
     private static final String URL_WIZBAN = "wizban/";
     
@@ -34,7 +34,7 @@ public class McEclipsePlugin extends AbstractUIPlugin
     
    protected ImageRegistry createImageRegistry() {
         ImageRegistry registry = new ImageRegistry();
-        registerImage(registry, IMG_WIZ_TOMCAT, URL_WIZBAN + "spigot_wiz.png");
+        registerImage(registry, IMG_WIZ_SPIGOT, URL_WIZBAN + "spigot_wiz.png");
         return registry;
     }
     

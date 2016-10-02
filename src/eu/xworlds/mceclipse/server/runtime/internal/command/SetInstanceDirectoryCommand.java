@@ -20,7 +20,7 @@ public class SetInstanceDirectoryCommand extends ServerCommand
      * Constructs command to set the instance directory. Setting
      * the instance directory also sets testEnvironment true;
      * 
-     * @param server a Tomcat server
+     * @param server a spigot server
      * @param instanceDir instance directory to set
      */
     public SetInstanceDirectoryCommand(ISpigotServerWorkingCopy server, String instanceDir) {

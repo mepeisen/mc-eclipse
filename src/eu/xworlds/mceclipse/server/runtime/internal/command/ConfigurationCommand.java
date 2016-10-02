@@ -22,7 +22,7 @@ public abstract class ConfigurationCommand extends AbstractOperation {
     /**
      * ConfigurationCommand constructor comment.
      * 
-     * @param configuration a Tomcat configuration
+     * @param configuration a spigot configuration
      * @param label a label
      */
     public ConfigurationCommand(ISpigotConfigurationWorkingCopy configuration, String label) {

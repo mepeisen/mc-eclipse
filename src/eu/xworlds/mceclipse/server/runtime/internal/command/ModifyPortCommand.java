@@ -23,7 +23,7 @@ public class ModifyPortCommand extends ConfigurationCommand {
     /**
      * ModifyPortCommand constructor.
      * 
-     * @param configuration a Tomcat configuration
+     * @param configuration a spigot configuration
      * @param id a port id
      * @param port new port number
      */

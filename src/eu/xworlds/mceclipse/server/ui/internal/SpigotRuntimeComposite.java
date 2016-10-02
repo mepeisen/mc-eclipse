@@ -90,7 +90,7 @@ public class SpigotRuntimeComposite  extends Composite {
         
         wizard.setTitle("Spigot server");
         wizard.setDescription("Specify the installation directory");
-        wizard.setImageDescriptor(McEclipsePlugin.getImageDescriptor(McEclipsePlugin.IMG_WIZ_TOMCAT));
+        wizard.setImageDescriptor(McEclipsePlugin.getImageDescriptor(McEclipsePlugin.IMG_WIZ_SPIGOT));
         
         createControl();
     }
