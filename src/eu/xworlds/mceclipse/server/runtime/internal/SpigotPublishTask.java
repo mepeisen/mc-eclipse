@@ -3,10 +3,13 @@
  */
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -14,11 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.ui.jarpackager.IJarExportRunnable;
-import org.eclipse.jdt.ui.jarpackager.JarPackageData;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.PublishOperation;
@@ -99,7 +98,7 @@ public class SpigotPublishTask extends PublishTaskDelegate
         public void execute(IProgressMonitor monitor, IAdaptable info) throws CoreException
         {
             
-            final IPath pluginsDir = this.base.append(this.server.getServerDeployDirectory());
+            final IPath pluginsDir = this.server.getServerDeployDirectory();
             // ensure the dir exists
             if (!pluginsDir.toFile().exists())
             {
@@ -108,29 +107,19 @@ public class SpigotPublishTask extends PublishTaskDelegate
             
             for (final IModule mod : this.module)
             {
-                // generate jars and deploy to plugins dir
-                final IPath jarPath = pluginsDir.append(mod.getProject().getName() + ".jar"); //$NON-NLS-1$
-                
-                // generate Jar
-                final JarPackageData jpd = new JarPackageData();
-                jpd.setJarLocation(jarPath);
-                final List<Object> elements = new ArrayList<>();
+                // generate eclipseproject file and deploy to plugins dir
+                final IPath eclipseProjectPath = pluginsDir.append(mod.getProject().getName() + ".eclipseproject"); //$NON-NLS-1$
+                final Properties props = new Properties();
                 final IJavaProject javaProject = JavaCore.create(mod.getProject());
-                for (final IPackageFragmentRoot root : javaProject.getAllPackageFragmentRoots())
-                {
-                    if (root.getKind() == IPackageFragmentRoot.K_SOURCE)
-                    {
-                        elements.add(root);
-                    }
-                }
-                jpd.setElements(elements.toArray(new Object[elements.size()]));
-                
-                final IJarExportRunnable runnable = jpd.createJarExportRunnable(null /*PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell()*/);
+                props.setProperty("classes", ResourcesPlugin.getWorkspace().getRoot().getFolder(javaProject.getOutputLocation()).getLocation().toOSString()); //$NON-NLS-1$
                 try
                 {
-                    runnable.run(monitor);
+                    try (final FileOutputStream fos = new FileOutputStream(eclipseProjectPath.toFile()))
+                    {
+                        props.store(fos, null);
+                    }
                 }
-                catch (InvocationTargetException | InterruptedException e)
+                catch (IOException e)
                 {
                     throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "problems while publishing plugins", e));
                 }

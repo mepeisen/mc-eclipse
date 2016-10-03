@@ -16,5 +16,11 @@ public class Spigot184VersionHandler extends SpigotVersionHandler
     {
         return "1.8.4-R0.1-SNAPSHOT"; //$NON-NLS-1$
     }
+
+    @Override
+    protected String getSpigotToolsName()
+    {
+        return "1.8.4"; //$NON-NLS-1$
+    }
     
 }

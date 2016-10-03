@@ -16,5 +16,11 @@ public class Spigot1102VersionHandler extends SpigotVersionHandler
     {
         return "1.10.2-R0.1-SNAPSHOT"; //$NON-NLS-1$
     }
+
+    @Override
+    protected String getSpigotToolsName()
+    {
+        return "1.10.2"; //$NON-NLS-1$
+    }
     
 }

@@ -1,14 +1,22 @@
 package eu.xworlds.mceclipse;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.osgi.framework.Bundle;
 
 public class McEclipsePlugin extends AbstractUIPlugin
 {
@@ -75,6 +83,43 @@ public class McEclipsePlugin extends AbstractUIPlugin
         } catch (Exception e) {
             //Trace.trace(Trace.WARNING, "Error registering image", e);
         }
+    }
+
+    /**
+     * @param spigotToolsName
+     * @return path to spigot tools
+     */
+    public static IPath getSpigotToolsJar(String spigotToolsName)
+    {
+        final Bundle bundle = singleton.getBundle();
+        final String jarName = "mce-spigot-tools-" + spigotToolsName + ".jar"; //$NON-NLS-1$ //$NON-NLS-2$
+        final File dataFile = bundle.getDataFile(bundle.getVersion() + "-" + jarName); //$NON-NLS-1$
+        if (!dataFile.exists())
+        {
+            final URL fileURL = bundle.getEntry("mce-spigot-tools/mce-spigot-tools-" + spigotToolsName + ".jar"); //$NON-NLS-1$ //$NON-NLS-2$
+            try
+            {
+                try (final InputStream is = fileURL.openStream())
+                {
+                    try (final ReadableByteChannel rbc = Channels.newChannel(is))
+                    {
+                        try (FileOutputStream fos = new FileOutputStream(dataFile))
+                        {
+                            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                        }
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                if (dataFile.exists())
+                {
+                    dataFile.delete();
+                }
+                throw new IllegalStateException("Problems extracting spigot tools jar", ex); //$NON-NLS-1$
+            }
+        }
+        return new Path(dataFile.getAbsolutePath());
     }
     
 }

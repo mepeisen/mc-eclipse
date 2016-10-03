@@ -37,6 +37,12 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
      */
     protected abstract String getPomVersion();
     
+    /**
+     * Returns the spigot tools filename
+     * @return spigot tools filename
+     */
+    protected abstract String getSpigotToolsName();
+    
     @Override
     public IStatus verifyInstallPath(IPath installPath)
     {
@@ -84,7 +90,8 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
     @Override
     public String getRuntimeClass()
     {
-        return "org.bukkit.craftbukkit.Main"; //$NON-NLS-1$
+        // return "org.bukkit.craftbukkit.Main"; //$NON-NLS-1$
+        return "eu.xworlds.mceclipse.spigot.Main"; //$NON-NLS-1$
     }
     
     @Override
@@ -98,6 +105,7 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
             }
         });
         final List<IRuntimeClasspathEntry> result = new ArrayList<>();
+        result.add(JavaRuntime.newArchiveRuntimeClasspathEntry(McEclipsePlugin.getSpigotToolsJar(this.getSpigotToolsName())));
         if (jarfiles != null && jarfiles.length > 0)
         {
             for (final File jarFile : jarfiles)

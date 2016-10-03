@@ -31,3 +31,4 @@ Require-Bundle: org.eclipse.wst.common.core;bundle-version="1.2.0",
  org.eclipse.m2e.model.edit;bundle-version="1.7.0",
  org.eclipse.m2e.maven.runtime;bundle-version="1.7.0"
 Bundle-Activator: eu.xworlds.mceclipse.McEclipsePlugin
+Bundle-ActivationPolicy: lazy
