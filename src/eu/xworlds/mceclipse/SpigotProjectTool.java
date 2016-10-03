@@ -113,7 +113,7 @@ public class SpigotProjectTool
         
         final Dependency dep1 = new Dependency();
         dep1.setGroupId("org.spigotmc"); //$NON-NLS-1$
-        dep1.setArtifactId("spigot"); //$NON-NLS-1$
+        dep1.setArtifactId("spigot-api"); //$NON-NLS-1$
         dep1.setVersion("${spigot.version}"); //$NON-NLS-1$
         dep1.setScope("provided"); //$NON-NLS-1$
         model.getDependencies().add(dep1);
@@ -122,10 +122,10 @@ public class SpigotProjectTool
         rep1.setId("spigot-repo"); //$NON-NLS-1$
         rep1.setUrl("https://hub.spigotmc.org/nexus/content/repositories/snapshots"); //$NON-NLS-1$
         model.getRepositories().add(rep1);
-        final Repository rep2 = new Repository();
-        rep2.setId("mce-repo"); //$NON-NLS-1$
-        rep2.setUrl("http://nexus.xworlds.eu/nexus/content/groups/mce"); //$NON-NLS-1$
-        model.getRepositories().add(rep2);
+//        final Repository rep2 = new Repository();
+//        rep2.setId("mce-repo"); //$NON-NLS-1$
+//        rep2.setUrl("http://nexus.xworlds.eu/nexus/content/groups/mce"); //$NON-NLS-1$
+//        model.getRepositories().add(rep2);
     }
 
     /**
