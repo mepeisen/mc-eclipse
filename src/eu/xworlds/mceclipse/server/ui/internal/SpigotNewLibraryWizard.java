@@ -133,77 +133,77 @@ public class SpigotNewLibraryWizard extends AbstractMavenProjectWizard implement
             MessageDialog.openError(this.getShell(), NLS.bind(Messages.wizardProjectJobFailed, projectName),
                     nameStatus.getMessage());
             return false;
+        }
+        
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        final IPath location = this.locationPage.isInWorkspace() ? null : this.locationPage.getLocationPath();
+        IWorkspaceRoot root = workspace.getRoot();
+        final IProject project = this.importConfiguration.getProject(root, model);
+        boolean pomExists = (this.locationPage.isInWorkspace() ? root.getLocation().append(project.getName())
+                : location).append("pom.xml").toFile().exists();
+        if (pomExists) {
+            MessageDialog.openError(this.getShell(), NLS.bind(Messages.wizardProjectJobFailed, projectName),
+                    Messages.wizardProjectErrorPomAlreadyExists);
+            return false;
+        }
+        
+        final AbstractCreateMavenProjectJob job;
+        if (this.simpleProject.getSelection()) {
+            final String[] archetype = this.artifactPage.getFolders();
+            job = new AbstractCreateMavenProjectJob(
+                    NLS.bind(Messages.wizardProjectJobCreatingProject, projectName), this.workingSets) {
+                protected List<IProject> doCreateMavenProjects(IProgressMonitor monitor) throws CoreException {
+                    SpigotProjectTool.prepareModelForSpigotLibrary(model);
+                    MavenPlugin.getProjectConfigurationManager().createSimpleProject(project, location, model,
+                            archetype, SpigotNewLibraryWizard.this.importConfiguration, monitor);
+                    SpigotProjectTool.enableSpigotLibraryFacet(project, monitor);
+                    // TODO Create plugin.yml etc.
+                    return Arrays.asList(new IProject[] { project });
+                }
+            };
         } else {
-            IWorkspace workspace = ResourcesPlugin.getWorkspace();
-            final IPath location = this.locationPage.isInWorkspace() ? null : this.locationPage.getLocationPath();
-            IWorkspaceRoot root = workspace.getRoot();
-            final IProject project = this.importConfiguration.getProject(root, model);
-            boolean pomExists = (this.locationPage.isInWorkspace() ? root.getLocation().append(project.getName())
-                    : location).append("pom.xml").toFile().exists();
-            if (pomExists) {
-                MessageDialog.openError(this.getShell(), NLS.bind(Messages.wizardProjectJobFailed, projectName),
-                        Messages.wizardProjectErrorPomAlreadyExists);
-                return false;
-            } else {
-                final AbstractCreateMavenProjectJob job;
-                if (this.simpleProject.getSelection()) {
-                    final String[] archetype = this.artifactPage.getFolders();
-                    job = new AbstractCreateMavenProjectJob(
-                            NLS.bind(Messages.wizardProjectJobCreatingProject, projectName), this.workingSets) {
-                        protected List<IProject> doCreateMavenProjects(IProgressMonitor monitor) throws CoreException {
-                            SpigotProjectTool.prepareModelForSpigotLibrary(model);
-                            MavenPlugin.getProjectConfigurationManager().createSimpleProject(project, location, model,
-                                    archetype, SpigotNewLibraryWizard.this.importConfiguration, monitor);
-                            SpigotProjectTool.enableSpigotLibraryFacet(project, monitor);
-                            // TODO Create plugin.yml etc.
-                            return Arrays.asList(new IProject[] { project });
+            final Archetype archetype1 = this.archetypePage.getArchetype();
+            final String groupId = model.getGroupId();
+            final String artifactId = model.getArtifactId();
+            final String version = model.getVersion();
+            final String javaPackage = this.parametersPage.getJavaPackage();
+            final Properties properties = this.parametersPage.getProperties();
+            job = new AbstractCreateMavenProjectJob(
+                    NLS.bind(Messages.wizardProjectJobCreating, archetype1.getArtifactId()), this.workingSets) {
+                protected List<IProject> doCreateMavenProjects(IProgressMonitor monitor) throws CoreException {
+                    List projects = MavenPlugin.getProjectConfigurationManager().createArchetypeProjects(
+                            location, archetype1, groupId, artifactId, version, javaPackage, properties,
+                            SpigotNewLibraryWizard.this.importConfiguration, monitor);
+                    for (final Object prj : projects)
+                    {
+                        // TODO Enable on all modules?
+                        SpigotProjectTool.enableSpigotLibraryFacet((IProject) prj, monitor);
+                    }
+                    return projects;
+                }
+            };
+        }
+
+        job.addJobChangeListener(new JobChangeAdapter() {
+            public void done(IJobChangeEvent event) {
+                final IStatus result = event.getResult();
+                if (!result.isOK()) {
+                    Display.getDefault().asyncExec(new Runnable() {
+                        public void run() {
+                            MessageDialog.openError(SpigotNewLibraryWizard.this.getShell(),
+                                    NLS.bind(Messages.wizardProjectJobFailed, projectName),
+                                    result.getMessage());
                         }
-                    };
-                } else {
-                    final Archetype archetype1 = this.archetypePage.getArchetype();
-                    final String groupId = model.getGroupId();
-                    final String artifactId = model.getArtifactId();
-                    final String version = model.getVersion();
-                    final String javaPackage = this.parametersPage.getJavaPackage();
-                    final Properties properties = this.parametersPage.getProperties();
-                    job = new AbstractCreateMavenProjectJob(
-                            NLS.bind(Messages.wizardProjectJobCreating, archetype1.getArtifactId()), this.workingSets) {
-                        protected List<IProject> doCreateMavenProjects(IProgressMonitor monitor) throws CoreException {
-                            List projects = MavenPlugin.getProjectConfigurationManager().createArchetypeProjects(
-                                    location, archetype1, groupId, artifactId, version, javaPackage, properties,
-                                    SpigotNewLibraryWizard.this.importConfiguration, monitor);
-                            for (final Object prj : projects)
-                            {
-                                // TODO Enable on all modules?
-                                SpigotProjectTool.enableSpigotLibraryFacet((IProject) prj, monitor);
-                            }
-                            return projects;
-                        }
-                    };
+                    });
                 }
 
-                job.addJobChangeListener(new JobChangeAdapter() {
-                    public void done(IJobChangeEvent event) {
-                        final IStatus result = event.getResult();
-                        if (!result.isOK()) {
-                            Display.getDefault().asyncExec(new Runnable() {
-                                public void run() {
-                                    MessageDialog.openError(SpigotNewLibraryWizard.this.getShell(),
-                                            NLS.bind(Messages.wizardProjectJobFailed, projectName),
-                                            result.getMessage());
-                                }
-                            });
-                        }
-
-                        MappingDiscoveryJob discoveryJob = new MappingDiscoveryJob(job.getCreatedProjects());
-                        discoveryJob.schedule();
-                    }
-                });
-                job.setRule(MavenPlugin.getProjectConfigurationManager().getRule());
-                job.schedule();
-                return true;
+                MappingDiscoveryJob discoveryJob = new MappingDiscoveryJob(job.getCreatedProjects());
+                discoveryJob.schedule();
             }
-        }
+        });
+        job.setRule(MavenPlugin.getProjectConfigurationManager().getRule());
+        job.schedule();
+        return true;
     }
     
 }
