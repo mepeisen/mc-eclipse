@@ -14,7 +14,7 @@ public class Spigot184VersionHandler extends SpigotVersionHandler
     @Override
     protected String getPomVersion()
     {
-        return "1.8.4-R0.1-SNAPSHOT"; //$NON-NLS-1$
+        return "1.8.8-R0.1-SNAPSHOT"; //$NON-NLS-1$
     }
 
     @Override

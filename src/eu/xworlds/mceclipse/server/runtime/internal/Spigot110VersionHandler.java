@@ -14,7 +14,7 @@ public class Spigot110VersionHandler extends SpigotVersionHandler
     @Override
     protected String getPomVersion()
     {
-        return "1.10-R0.1-SNAPSHOT"; //$NON-NLS-1$
+        return "1.10.2-R0.1-SNAPSHOT"; //$NON-NLS-1$
     }
 
     @Override
