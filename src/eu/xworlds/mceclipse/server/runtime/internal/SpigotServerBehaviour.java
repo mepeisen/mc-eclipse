@@ -21,6 +21,7 @@ import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -884,6 +885,11 @@ public class SpigotServerBehaviour extends ServerBehaviourDelegate
             {
                 // ignore
             }
+        }
+        
+        for (final SpigotLibrary lib : getSpigotConfiguration().getSpigotLibraries())
+        {
+            mergeClasspath(oldCp, JavaRuntime.newProjectRuntimeClasspathEntry(JavaCore.create(lib.getProject())));
         }
         
         iterator = oldCp.iterator();

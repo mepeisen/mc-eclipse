@@ -137,11 +137,23 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
     @Override
     public IStatus canAddModule(IModule module)
     {
-        if ("1.0".equals(module.getModuleType().getVersion())) //$NON-NLS-1$
+        if ("spigot.plugin".equals(module.getModuleType().getId())) //$NON-NLS-1$
         {
-            return Status.OK_STATUS;
+            if ("1.0".equals(module.getModuleType().getVersion())) //$NON-NLS-1$
+            {
+                return Status.OK_STATUS;
+            }
+            return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Unsupported plugin version");
         }
-        return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Unsupported plugin version");
+        if ("spigot.library".equals(module.getModuleType().getId())) //$NON-NLS-1$
+        {
+            if ("1.0".equals(module.getModuleType().getVersion())) //$NON-NLS-1$
+            {
+                return Status.OK_STATUS;
+            }
+            return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Unsupported library version");
+        }
+        return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Unsupported module type");
     }
     
     @Override

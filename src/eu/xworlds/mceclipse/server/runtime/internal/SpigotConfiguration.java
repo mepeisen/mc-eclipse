@@ -50,6 +50,9 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
     /** the spigot plugin properties. */
     private Properties pluginProperties = new Properties();
     
+    /** the spigot library properties. */
+    private Properties libraryProperties = new Properties();
+    
     private transient List<PropertyChangeListener> propertyListeners;
 
     /**
@@ -71,7 +74,7 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         try
         {
             final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Loading", 3);
+            monitor.beginTask("Loading", 4);
             if (f == null)
             {
                 monitor.done();
@@ -83,11 +86,19 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
             this.loadPropertiesFromFile(this.properties, serverProperties, monitor);
             monitor.worked(1);
             
-            // load eclipse.pluginproperties
+            // load eclipse.plugin.properties
             final IFile eclipsePluginProperties = f.getFile("eclipse.plugin.properties"); //$NON-NLS-1$
             if (eclipsePluginProperties.exists())
             {
                 this.loadPropertiesFromFile(this.pluginProperties, eclipsePluginProperties, monitor);
+            }
+            monitor.worked(1);
+            
+            // load eclipse.library.properties
+            final IFile eclipseLibraryProperties = f.getFile("eclipse.library.properties"); //$NON-NLS-1$
+            if (eclipseLibraryProperties.exists())
+            {
+                this.loadPropertiesFromFile(this.libraryProperties, eclipseLibraryProperties, monitor);
             }
             monitor.worked(1);
             
@@ -112,7 +123,7 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         try
         {
             final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Loading", 3);
+            monitor.beginTask("Loading", 4);
             if (path == null)
             {
                 monitor.done();
@@ -124,11 +135,19 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
             this.loadPropertiesFromFile(this.properties, serverProperties);
             monitor.worked(1);
             
-            // load eclipse.pluginproperties
+            // load eclipse.plugin.properties
             final File eclipsePluginProperties = path.append("eclipse.plugin.properties").toFile(); //$NON-NLS-1$
             if (eclipsePluginProperties.exists())
             {
                 this.loadPropertiesFromFile(this.pluginProperties, eclipsePluginProperties);
+            }
+            monitor.worked(1);
+            
+            // load eclipse.library.properties
+            final File eclipseLibraryProperties = path.append("eclipse.library.properties").toFile(); //$NON-NLS-1$
+            if (eclipseLibraryProperties.exists())
+            {
+                this.loadPropertiesFromFile(this.pluginProperties, eclipseLibraryProperties);
             }
             monitor.worked(1);
             
@@ -153,6 +172,11 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         load(path, monitor);
     }
     
+    /**
+     * @param props
+     * @param file
+     * @throws IOException
+     */
     private void loadPropertiesFromFile(final Properties props, File file) throws IOException
     {
         props.clear();
@@ -162,6 +186,11 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         }
     }
     
+    /**
+     * @param props
+     * @param file
+     * @throws IOException
+     */
     private void savePropertiesToFile(final Properties props, File file) throws IOException
     {
         try (final FileOutputStream fos = new FileOutputStream(file))
@@ -170,6 +199,13 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         }
     }
     
+    /**
+     * @param props
+     * @param file
+     * @param monitor
+     * @throws IOException
+     * @throws CoreException
+     */
     private void loadPropertiesFromFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
     {
         props.clear();
@@ -179,6 +215,13 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         }
     }
     
+    /**
+     * @param props
+     * @param file
+     * @param monitor
+     * @throws IOException
+     * @throws CoreException
+     */
     private void savePropertiesToFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
     {
         byte[] contents = null;
@@ -207,7 +250,7 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         try
         {
             final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Saving", 3);
+            monitor.beginTask("Saving", 4);
             
             if (!serverConfiguration.exists())
             {
@@ -223,6 +266,11 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
             // save eclipse.plugin.properties
             final IFile eclipsePluginProperties = serverConfiguration.getFile("eclipse.plugin.properties"); //$NON-NLS-1$
             this.savePropertiesToFile(this.pluginProperties, eclipsePluginProperties, monitor);
+            monitor.worked(1);
+            
+            // save eclipse.library.properties
+            final IFile eclipseLibraryProperties = serverConfiguration.getFile("eclipse.library.properties"); //$NON-NLS-1$
+            this.savePropertiesToFile(this.libraryProperties, eclipseLibraryProperties, monitor);
             
             monitor.done();
         }
@@ -242,7 +290,7 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         try
         {
             final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Saving", 3);
+            monitor.beginTask("Saving", 4);
             
             if (!path.toFile().exists())
             {
@@ -258,6 +306,11 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
             // save eclipse.plugin.properties
             final File eclipsePluginProperties = path.append("eclipse.plugin.properties").toFile(); //$NON-NLS-1$
             this.savePropertiesToFile(this.pluginProperties, eclipsePluginProperties);
+            monitor.worked(1);
+            
+            // save eclipse.library.properties
+            final File eclipseLibraryProperties = path.append("eclipse.library.properties").toFile(); //$NON-NLS-1$
+            this.savePropertiesToFile(this.libraryProperties, eclipseLibraryProperties);
             
             monitor.done();
         }
@@ -323,6 +376,62 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
         toPluginsConfig(plugins);
     }
 
+    /**
+     * @param libraries
+     */
+    private void toLibraryiesConfig(List<SpigotLibrary> libraries)
+    {
+        this.libraryProperties.clear();
+        this.libraryProperties.setProperty("size", String.valueOf(libraries.size())); //$NON-NLS-1$
+        for (int i = 0; i < libraries.size(); i++)
+        {
+            libraries.get(i).saveConfig(this.libraryProperties, i);
+        }
+    }
+
+    /**
+     * fetches libraries from config.
+     * @return libraries from config.
+     */
+    private List<SpigotLibrary> getLibrariesFromConfig()
+    {
+        final List<SpigotLibrary> result = new ArrayList<>();
+        if (this.libraryProperties.containsKey("size")) //$NON-NLS-1$
+        {
+            final int size = Integer.parseInt(this.libraryProperties.getProperty("size")); //$NON-NLS-1$
+            for (int i = 0; i < size; i++)
+            {
+                final SpigotLibrary lib = new SpigotLibrary();
+                lib.readConfig(this.libraryProperties, i);
+                result.add(lib);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void addSpigotLibrary(int i, SpigotLibrary module2)
+    {
+        final List<SpigotLibrary> libs = getLibrariesFromConfig();
+        if (i == -1)
+        {
+            libs.add(module2);
+        }
+        else
+        {
+            libs.add(i, module2);
+        }
+        toLibraryiesConfig(libs);
+    }
+
+    @Override
+    public void removeSpigotLibrary(int i)
+    {
+        final List<SpigotLibrary> libs = getLibrariesFromConfig();
+        libs.remove(i);
+        toLibraryiesConfig(libs);
+    }
+
     @Override
     public ServerPort getServerPort()
     {
@@ -333,6 +442,12 @@ public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
     public List<SpigotPlugin> getSpigotPlugins()
     {
         return Collections.unmodifiableList(this.getPluginsFromConfig());
+    }
+
+    @Override
+    public List<SpigotLibrary> getSpigotLibraries()
+    {
+        return Collections.unmodifiableList(this.getLibrariesFromConfig());
     }
 
     @Override

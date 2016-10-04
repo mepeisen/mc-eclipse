@@ -30,4 +30,11 @@ public interface ISpigotConfiguration
      */
     List<SpigotPlugin> getSpigotPlugins();
     
+    /**
+     * Returns an immutable list of added spigot libraries.
+     * 
+     * @return immutable list of libraries.
+     */
+    List<SpigotLibrary> getSpigotLibraries();
+    
 }

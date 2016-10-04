@@ -31,6 +31,11 @@ public class SpigotServer extends ServerDelegate implements ISpigotServerWorking
      * spigot plugin
      */
     private static final String SPIGOT_PLUGIN = "spigot.plugin"; //$NON-NLS-1$
+    
+    /**
+     * spigot libraries
+     */
+    private static final String SPIGOT_LIBRARY = "spigot.library"; //$NON-NLS-1$
 
     /** debug flag. */
     public static final String PROPERTY_DEBUG = "debug"; //$NON-NLS-1$
@@ -464,8 +469,8 @@ public class SpigotServer extends ServerDelegate implements ISpigotServerWorking
             for (int i = 0; i < size; i++)
             {
                 IModule module = add[i];
-                if (!SPIGOT_PLUGIN.equals(module.getModuleType().getId()))
-                    return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Only Spigot plugins are supported", null);
+                if (!SPIGOT_PLUGIN.equals(module.getModuleType().getId()) && !SPIGOT_LIBRARY.equals(module.getModuleType().getId()))
+                    return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Only Spigot plugins and libraries are supported", null);
                 
                 if (getSpigotVersionHandler() == null)
                     return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "No runtime found", null);
@@ -590,13 +595,16 @@ public class SpigotServer extends ServerDelegate implements ISpigotServerWorking
             for (int i = 0; i < size; i++)
             {
                 IModule module3 = add[i];
-//                IWebModule module = (IWebModule) module3.loadAdapter(IWebModule.class, monitor);
-//                String contextRoot = module.getContextRoot();
-//                if (contextRoot != null && !contextRoot.startsWith("/") && contextRoot.length() > 0)
-//                    contextRoot = "/" + contextRoot;
-//                String docBase = config.getDocBasePrefix() + module3.getName();
-                SpigotPlugin module2 = new SpigotPlugin(module3.getId(), module3.getProject());
-                config.addSpigotPlugin(-1, module2);
+                if (SPIGOT_PLUGIN.equals(module3.getModuleType().getId()))
+                {
+                    SpigotPlugin module2 = new SpigotPlugin(module3.getId(), module3.getProject());
+                    config.addSpigotPlugin(-1, module2);
+                }
+                else if (SPIGOT_LIBRARY.equals(module3.getModuleType().getId()))
+                {
+                    SpigotLibrary module2 = new SpigotLibrary(module3.getId(), module3.getProject());
+                    config.addSpigotLibrary(-1, module2);
+                }
             }
         }
         
@@ -607,13 +615,27 @@ public class SpigotServer extends ServerDelegate implements ISpigotServerWorking
             {
                 IModule module3 = remove[j];
                 String memento = module3.getId();
-                List<SpigotPlugin> modules = getSpigotConfiguration().getSpigotPlugins();
-                int size = modules.size();
-                for (int i = 0; i < size; i++)
+                if (SPIGOT_PLUGIN.equals(module3.getModuleType().getId()))
                 {
-                    SpigotPlugin module = modules.get(i);
-                    if (memento.equals(module.getMemento()))
-                        config.removeSpigotPlugin(i);
+                    List<SpigotPlugin> modules = getSpigotConfiguration().getSpigotPlugins();
+                    int size = modules.size();
+                    for (int i = 0; i < size; i++)
+                    {
+                        SpigotPlugin module = modules.get(i);
+                        if (memento.equals(module.getMemento()))
+                            config.removeSpigotPlugin(i);
+                    }
+                }
+                else if (SPIGOT_LIBRARY.equals(module3.getModuleType().getId()))
+                {
+                    List<SpigotLibrary> modules = getSpigotConfiguration().getSpigotLibraries();
+                    int size = modules.size();
+                    for (int i = 0; i < size; i++)
+                    {
+                        SpigotLibrary module = modules.get(i);
+                        if (memento.equals(module.getMemento()))
+                            config.removeSpigotLibrary(i);
+                    }
                 }
             }
         }

@@ -34,6 +34,19 @@ public interface ISpigotConfigurationWorkingCopy extends ISpigotConfiguration
      */
     void removeSpigotPlugin(int index);
     
+    /**
+     * Adds a new spigot library at given index
+     * @param index
+     * @param library
+     */
+    void addSpigotLibrary(int index, SpigotLibrary library);
+    
+    /**
+     * Removes spigot library at given index
+     * @param index
+     */
+    void removeSpigotLibrary(int index);
+    
     void addPropertyChangeListener(PropertyChangeListener listener); 
     void removePropertyChangeListener(PropertyChangeListener listener);
 
