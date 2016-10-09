@@ -4,37 +4,21 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.util.List;
-
 import org.eclipse.wst.server.core.ServerPort;
+
+import eu.xworlds.mceclipse.server.IMinecraftConfiguration;
 
 /**
  * @author mepeisen
  *
  */
-public interface ISpigotConfiguration
+public interface ISpigotConfiguration extends IMinecraftConfiguration<SpigotPlugin, SpigotLibrary>
 {
-    
-    public static final String MODIFY_PORT_PROPERTY = "modifyPort";
     
     /**
      * Returns the current server port.
      * @return server port.
      */
     ServerPort getServerPort();
-    
-    /**
-     * Returns an immutable list of added spigot plugins.
-     * 
-     * @return immutable list of plugins.
-     */
-    List<SpigotPlugin> getSpigotPlugins();
-    
-    /**
-     * Returns an immutable list of added spigot libraries.
-     * 
-     * @return immutable list of libraries.
-     */
-    List<SpigotLibrary> getSpigotLibraries();
     
 }

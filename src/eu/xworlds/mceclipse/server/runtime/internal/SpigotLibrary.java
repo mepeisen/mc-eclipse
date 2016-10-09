@@ -9,11 +9,13 @@ import java.util.Properties;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 
+import eu.xworlds.mceclipse.server.IMinecraftLibrary;
+
 /**
  * @author mepeisen
  *
  */
-public class SpigotLibrary
+public class SpigotLibrary implements IMinecraftLibrary
 {
 
     /** plugin id */
@@ -39,28 +41,19 @@ public class SpigotLibrary
         // empty
     }
 
-    /**
-     * Returns the id.
-     * @return id
-     */
+    @Override
     public String getMemento()
     {
         return this.id;
     }
     
-    /**
-     * Returns the project
-     * @return project reference
-     */
+    @Override
     public IProject getProject()
     {
         return this.project;
     }
 
-    /**
-     * @param libraryProperties
-     * @param key
-     */
+    @Override
     public void saveConfig(Properties libraryProperties, int key)
     {
         libraryProperties.setProperty("library" + key + ".id", this.id); //$NON-NLS-1$ //$NON-NLS-2$
@@ -68,10 +61,7 @@ public class SpigotLibrary
         libraryProperties.setProperty("library" + key + ".name", this.project.getName()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    /**
-     * @param libraryProperties
-     * @param key
-     */
+    @Override
     public void readConfig(Properties libraryProperties, int key)
     {
         this.id = libraryProperties.getProperty("library" + key + ".id"); //$NON-NLS-1$ //$NON-NLS-2$

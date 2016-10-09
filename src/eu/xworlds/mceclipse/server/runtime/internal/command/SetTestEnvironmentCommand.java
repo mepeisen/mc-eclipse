@@ -4,7 +4,7 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal.command;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotServerWorkingCopy;
+import eu.xworlds.mceclipse.server.IMinecraftServerWorkingCopy;
 
 /**
  * @author mepeisen
@@ -24,7 +24,7 @@ public class SetTestEnvironmentCommand extends ServerCommand
      * @param te
      *            <code>true</code> for a test environment.
      */
-    public SetTestEnvironmentCommand(ISpigotServerWorkingCopy server, boolean te)
+    public SetTestEnvironmentCommand(IMinecraftServerWorkingCopy server, boolean te)
     {
         super(server, "Spigot Server Path Change");
         this.te = te;
@@ -33,22 +33,24 @@ public class SetTestEnvironmentCommand extends ServerCommand
     /**
      * Execute the command.
      */
+    @Override
     public void execute()
     {
-        oldTe = server.isTestEnvironment();
+        this.oldTe = this.server.isTestEnvironment();
         // save old instance directory
-        oldInstanceDir = server.getInstanceDirectory();
-        server.setTestEnvironment(te);
+        this.oldInstanceDir = this.server.getInstanceDirectory();
+        this.server.setTestEnvironment(this.te);
         // ensure instance directory is cleared
-        server.setInstanceDirectory(null);
+        this.server.setInstanceDirectory(null);
     }
     
     /**
      * Undo the command.
      */
+    @Override
     public void undo()
     {
-        server.setTestEnvironment(oldTe);
-        server.setInstanceDirectory(oldInstanceDir);
+        this.server.setTestEnvironment(this.oldTe);
+        this.server.setInstanceDirectory(this.oldInstanceDir);
     }
 }

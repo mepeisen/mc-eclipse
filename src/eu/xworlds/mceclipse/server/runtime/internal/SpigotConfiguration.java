@@ -4,494 +4,110 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.ServerPort;
-
-import eu.xworlds.mceclipse.McEclipsePlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class SpigotConfiguration implements ISpigotConfigurationWorkingCopy
+public class SpigotConfiguration extends AbstractConfiguration<SpigotPlugin, SpigotLibrary> implements ISpigotConfigurationWorkingCopy
 {
-
-    /** runtime folder. */
-    private IFolder folder;
     
-    /** the port number to be used. */
-    private int portNumber = 65535;
-
     /** the server properties. */
     private Properties properties = new Properties();
     
-    /** the spigot plugin properties. */
-    private Properties pluginProperties = new Properties();
-    
-    /** the spigot library properties. */
-    private Properties libraryProperties = new Properties();
-    
-    private transient List<PropertyChangeListener> propertyListeners;
-
     /**
      * Constructor.
+     * 
      * @param folder
      */
     public SpigotConfiguration(IFolder folder)
     {
-        this.folder = folder;
+        super(folder);
     }
-
-    /**
-     * @param f
-     * @param m
-     * @throws CoreException 
-     */
-    public void load(IFolder f, IProgressMonitor m) throws CoreException
+    
+    @Override
+    protected FolderLoader[] getFolderLoadSteps()
     {
-        try
-        {
-            final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Loading", 4);
-            if (f == null)
-            {
-                monitor.done();
-                return;
-            }
-            
-            // load server.properties
+        return new FolderLoader[] { (f, monitor) -> {
             final IFile serverProperties = f.getFile("server.properties"); //$NON-NLS-1$
             this.loadPropertiesFromFile(this.properties, serverProperties, monitor);
-            monitor.worked(1);
-            
-            // load eclipse.plugin.properties
-            final IFile eclipsePluginProperties = f.getFile("eclipse.plugin.properties"); //$NON-NLS-1$
-            if (eclipsePluginProperties.exists())
-            {
-                this.loadPropertiesFromFile(this.pluginProperties, eclipsePluginProperties, monitor);
-            }
-            monitor.worked(1);
-            
-            // load eclipse.library.properties
-            final IFile eclipseLibraryProperties = f.getFile("eclipse.library.properties"); //$NON-NLS-1$
-            if (eclipseLibraryProperties.exists())
-            {
-                this.loadPropertiesFromFile(this.libraryProperties, eclipseLibraryProperties, monitor);
-            }
-            monitor.worked(1);
-            
-            // fetch port
-            this.portNumber = Integer.parseInt(this.properties.getProperty("server-port")); //$NON-NLS-1$
-            
-            monitor.done();
-        }
-        catch (Exception e)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Cannot load config", e)); 
-        }
+            this.portNumber = Integer.parseInt(this.properties.getProperty("server-port", "25565")); //$NON-NLS-1$ //$NON-NLS-2$
+        } };
     }
-
-    /**
-     * @param path
-     * @param m
-     * @throws CoreException 
-     */
-    public void load(IPath path, IProgressMonitor m) throws CoreException
+    
+    @Override
+    protected PathLoader[] getPathLoadSteps()
     {
-        try
-        {
-            final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Loading", 4);
-            if (path == null)
-            {
-                monitor.done();
-                return;
-            }
-            
-            // load server.properties
+        return new PathLoader[] { (path, monitor) -> {
             final File serverProperties = path.append("server.properties").toFile(); //$NON-NLS-1$
             this.loadPropertiesFromFile(this.properties, serverProperties);
-            monitor.worked(1);
-            
-            // load eclipse.plugin.properties
-            final File eclipsePluginProperties = path.append("eclipse.plugin.properties").toFile(); //$NON-NLS-1$
-            if (eclipsePluginProperties.exists())
-            {
-                this.loadPropertiesFromFile(this.pluginProperties, eclipsePluginProperties);
-            }
-            monitor.worked(1);
-            
-            // load eclipse.library.properties
-            final File eclipseLibraryProperties = path.append("eclipse.library.properties").toFile(); //$NON-NLS-1$
-            if (eclipseLibraryProperties.exists())
-            {
-                this.loadPropertiesFromFile(this.pluginProperties, eclipseLibraryProperties);
-            }
-            monitor.worked(1);
-            
-            // fetch port
-            this.portNumber = Integer.parseInt(this.properties.getProperty("server-port")); //$NON-NLS-1$
-            
-            monitor.done();
-        }
-        catch (Exception e)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Cannot load config", e)); 
-        }
-    }
-
-    /**
-     * @param path
-     * @param monitor
-     * @throws CoreException 
-     */
-    public void importFromPath(IPath path, IProgressMonitor monitor) throws CoreException
-    {
-        load(path, monitor);
+            this.portNumber = Integer.parseInt(this.properties.getProperty("server-port", "25565")); //$NON-NLS-1$ //$NON-NLS-2$
+        } };
     }
     
-    /**
-     * @param props
-     * @param file
-     * @throws IOException
-     */
-    private void loadPropertiesFromFile(final Properties props, File file) throws IOException
+    @Override
+    protected FolderSaver[] getFolderSaveSteps()
     {
-        props.clear();
-        try (final InputStream in = new FileInputStream(file))
-        {
-            props.load(in);
-        }
-    }
-    
-    /**
-     * @param props
-     * @param file
-     * @throws IOException
-     */
-    private void savePropertiesToFile(final Properties props, File file) throws IOException
-    {
-        try (final FileOutputStream fos = new FileOutputStream(file))
-        {
-            props.store(fos, null);
-        }
-    }
-    
-    /**
-     * @param props
-     * @param file
-     * @param monitor
-     * @throws IOException
-     * @throws CoreException
-     */
-    private void loadPropertiesFromFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
-    {
-        props.clear();
-        try (final InputStream in = file.getContents(true))
-        {
-            props.load(in);
-        }
-    }
-    
-    /**
-     * @param props
-     * @param file
-     * @param monitor
-     * @throws IOException
-     * @throws CoreException
-     */
-    private void savePropertiesToFile(final Properties props, IFile file, IProgressMonitor monitor) throws IOException, CoreException
-    {
-        byte[] contents = null;
-        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
-        {
-            props.store(baos, null);
-            contents = baos.toByteArray();
-        }
-        if (file.exists())
-        {
-            file.setContents(new ByteArrayInputStream(contents), true, true, monitor);
-        }
-        else
-        {
-            file.create(new ByteArrayInputStream(contents), true, monitor);
-        }
-    }
-
-    /**
-     * @param serverConfiguration
-     * @param m
-     * @throws CoreException 
-     */
-    public void save(IFolder serverConfiguration, IProgressMonitor m) throws CoreException
-    {
-        try
-        {
-            final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Saving", 4);
-            
-            if (!serverConfiguration.exists())
-            {
-                serverConfiguration.create(true, true, monitor);
-            }
-            monitor.worked(1);
-            
-            // save server.properties
-            final IFile serverProperties = serverConfiguration.getFile("server.properties"); //$NON-NLS-1$
+        return new FolderSaver[] { (f, monitor) -> {
+            final IFile serverProperties = f.getFile("server.properties"); //$NON-NLS-1$
             this.savePropertiesToFile(this.properties, serverProperties, monitor);
-            monitor.worked(1);
-            
-            // save eclipse.plugin.properties
-            final IFile eclipsePluginProperties = serverConfiguration.getFile("eclipse.plugin.properties"); //$NON-NLS-1$
-            this.savePropertiesToFile(this.pluginProperties, eclipsePluginProperties, monitor);
-            monitor.worked(1);
-            
-            // save eclipse.library.properties
-            final IFile eclipseLibraryProperties = serverConfiguration.getFile("eclipse.library.properties"); //$NON-NLS-1$
-            this.savePropertiesToFile(this.libraryProperties, eclipseLibraryProperties, monitor);
-            
-            monitor.done();
-        }
-        catch (Exception e)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Cannot save config", e)); 
-        }
+        } };
     }
-
-    /**
-     * @param path
-     * @param m
-     * @throws CoreException 
-     */
-    public void save(IPath path, IProgressMonitor m) throws CoreException
+    
+    @Override
+    protected PathSaver[] getPathSaveSteps()
     {
-        try
-        {
-            final IProgressMonitor monitor = m == null ? new NullProgressMonitor() : m;
-            monitor.beginTask("Saving", 4);
-            
-            if (!path.toFile().exists())
-            {
-                path.toFile().mkdir();
-            }
-            monitor.worked(1);
-            
-            // save server.properties
+        return new PathSaver[] { (path, monitor) -> {
             final File serverProperties = path.append("server.properties").toFile(); //$NON-NLS-1$
             this.savePropertiesToFile(this.properties, serverProperties);
-            monitor.worked(1);
-            
-            // save eclipse.plugin.properties
-            final File eclipsePluginProperties = path.append("eclipse.plugin.properties").toFile(); //$NON-NLS-1$
-            this.savePropertiesToFile(this.pluginProperties, eclipsePluginProperties);
-            monitor.worked(1);
-            
-            // save eclipse.library.properties
-            final File eclipseLibraryProperties = path.append("eclipse.library.properties").toFile(); //$NON-NLS-1$
-            this.savePropertiesToFile(this.libraryProperties, eclipseLibraryProperties);
-            
-            monitor.done();
-        }
-        catch (Exception e)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Cannot save config", e)); 
-        }
+        } };
     }
-
+    
     @Override
-    public void addSpigotPlugin(int i, SpigotPlugin module2)
+    protected SpigotPlugin createPlugin()
     {
-        final List<SpigotPlugin> plugins = getPluginsFromConfig();
-        if (i == -1)
-        {
-            plugins.add(module2);
-        }
-        else
-        {
-            plugins.add(i, module2);
-        }
-        toPluginsConfig(plugins);
+        return new SpigotPlugin();
     }
-
-    /**
-     * @param plugins
-     */
-    private void toPluginsConfig(List<SpigotPlugin> plugins)
-    {
-        this.pluginProperties.clear();
-        this.pluginProperties.setProperty("size", String.valueOf(plugins.size())); //$NON-NLS-1$
-        for (int i = 0; i < plugins.size(); i++)
-        {
-            plugins.get(i).saveConfig(this.pluginProperties, i);
-        }
-    }
-
-    /**
-     * fetches plugins from config.
-     * @return plugins from config.
-     */
-    private List<SpigotPlugin> getPluginsFromConfig()
-    {
-        final List<SpigotPlugin> result = new ArrayList<>();
-        if (this.pluginProperties.containsKey("size")) //$NON-NLS-1$
-        {
-            final int size = Integer.parseInt(this.pluginProperties.getProperty("size")); //$NON-NLS-1$
-            for (int i = 0; i < size; i++)
-            {
-                final SpigotPlugin plugin = new SpigotPlugin();
-                plugin.readConfig(this.pluginProperties, i);
-                result.add(plugin);
-            }
-        }
-        return result;
-    }
-
+    
     @Override
-    public void removeSpigotPlugin(int i)
+    protected SpigotLibrary createLibrary()
     {
-        final List<SpigotPlugin> plugins = getPluginsFromConfig();
-        plugins.remove(i);
-        toPluginsConfig(plugins);
+        return new SpigotLibrary();
     }
-
-    /**
-     * @param libraries
-     */
-    private void toLibraryiesConfig(List<SpigotLibrary> libraries)
-    {
-        this.libraryProperties.clear();
-        this.libraryProperties.setProperty("size", String.valueOf(libraries.size())); //$NON-NLS-1$
-        for (int i = 0; i < libraries.size(); i++)
-        {
-            libraries.get(i).saveConfig(this.libraryProperties, i);
-        }
-    }
-
-    /**
-     * fetches libraries from config.
-     * @return libraries from config.
-     */
-    private List<SpigotLibrary> getLibrariesFromConfig()
-    {
-        final List<SpigotLibrary> result = new ArrayList<>();
-        if (this.libraryProperties.containsKey("size")) //$NON-NLS-1$
-        {
-            final int size = Integer.parseInt(this.libraryProperties.getProperty("size")); //$NON-NLS-1$
-            for (int i = 0; i < size; i++)
-            {
-                final SpigotLibrary lib = new SpigotLibrary();
-                lib.readConfig(this.libraryProperties, i);
-                result.add(lib);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public void addSpigotLibrary(int i, SpigotLibrary module2)
-    {
-        final List<SpigotLibrary> libs = getLibrariesFromConfig();
-        if (i == -1)
-        {
-            libs.add(module2);
-        }
-        else
-        {
-            libs.add(i, module2);
-        }
-        toLibraryiesConfig(libs);
-    }
-
-    @Override
-    public void removeSpigotLibrary(int i)
-    {
-        final List<SpigotLibrary> libs = getLibrariesFromConfig();
-        libs.remove(i);
-        toLibraryiesConfig(libs);
-    }
-
+    
     @Override
     public ServerPort getServerPort()
     {
         return new ServerPort("core", "core", this.portNumber, "spigot"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
-
-    @Override
-    public List<SpigotPlugin> getSpigotPlugins()
-    {
-        return Collections.unmodifiableList(this.getPluginsFromConfig());
-    }
-
-    @Override
-    public List<SpigotLibrary> getSpigotLibraries()
-    {
-        return Collections.unmodifiableList(this.getLibrariesFromConfig());
-    }
-
+    
     @Override
     public void setServerPort(int port)
     {
         this.portNumber = port;
         this.properties.put("server-port", String.valueOf(this.portNumber)); //$NON-NLS-1$
-        firePropertyChangeEvent(MODIFY_PORT_PROPERTY, "core", new Integer(port));
+        firePropertyChangeEvent(MODIFY_PORT_PROPERTY, "core", new Integer(port)); //$NON-NLS-1$
     }
-    
-    protected void firePropertyChangeEvent(String propertyName, Object oldValue, Object newValue) {
-        if (propertyListeners == null)
-            return;
-        
-        PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
-        try {
-            Iterator<PropertyChangeListener> iterator = propertyListeners.iterator();
-            while (iterator.hasNext()) {
-                try {
-                    PropertyChangeListener listener = iterator.next();
-                    listener.propertyChange(event);
-                } catch (Exception e) {
-                    // Trace.trace(Trace.SEVERE, "Error firing property change event", e);
-                }
-            }
-        } catch (Exception e) {
-            // Trace.trace(Trace.SEVERE, "Error in property event", e);
+
+    @Override
+    public ServerPort[] getServerPorts()
+    {
+        return new ServerPort[]{this.getServerPort()};
+    }
+
+    @Override
+    public void setServerPort(String id, int port)
+    {
+        if ("core".equals(id)) //$NON-NLS-1$
+        {
+            this.setServerPort(port);
         }
-    } 
-
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener)
-    {
-        if (propertyListeners == null)
-            propertyListeners = new ArrayList<>();
-        propertyListeners.add(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener)
-    {
-        if (propertyListeners != null)
-            propertyListeners.remove(listener);
     }
     
 }

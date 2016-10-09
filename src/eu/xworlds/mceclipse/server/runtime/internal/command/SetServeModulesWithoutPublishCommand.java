@@ -4,7 +4,7 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal.command;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotServerWorkingCopy;
+import eu.xworlds.mceclipse.server.IMinecraftServerWorkingCopy;
 
 /**
  * @author mepeisen
@@ -21,7 +21,7 @@ public class SetServeModulesWithoutPublishCommand extends ServerCommand {
      * @param smwp <code>true</code> to enable serving modules without
      * publishing. Otherwise modules are served with standard publishing.
      */
-    public SetServeModulesWithoutPublishCommand(ISpigotServerWorkingCopy server, boolean smwp) {
+    public SetServeModulesWithoutPublishCommand(IMinecraftServerWorkingCopy server, boolean smwp) {
         super(server, "Changing public modules");
         this.smwp = smwp;
     }
@@ -29,15 +29,17 @@ public class SetServeModulesWithoutPublishCommand extends ServerCommand {
     /**
      * Execute the command.
      */
+    @Override
     public void execute() {
-        oldSmwp = server.isServeModulesWithoutPublish();
-        server.setServeModulesWithoutPublish(smwp);
+        this.oldSmwp = this.server.isServeModulesWithoutPublish();
+        this.server.setServeModulesWithoutPublish(this.smwp);
     }
 
     /**
      * Undo the command.
      */
+    @Override
     public void undo() {
-        server.setServeModulesWithoutPublish(oldSmwp);
+        this.server.setServeModulesWithoutPublish(this.oldSmwp);
     }
 }

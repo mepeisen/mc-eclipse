@@ -21,6 +21,7 @@ public class SpigotServerLocator extends ServerLocatorDelegate
     public void searchForServers(String host, final IServerSearchListener listener, final IProgressMonitor monitor)
     {
         SpigotRuntimeLocator.IRuntimeSearchListener listener2 = new SpigotRuntimeLocator.IRuntimeSearchListener() {
+            @Override
             public void runtimeFound(IRuntimeWorkingCopy runtime)
             {
                 String runtimeTypeId = runtime.getRuntimeType().getId();

@@ -4,7 +4,7 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal.command;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotServerWorkingCopy;
+import eu.xworlds.mceclipse.server.IMinecraftServerWorkingCopy;
 
 /**
  * @author mepeisen
@@ -20,7 +20,7 @@ public class SetDebugModeCommand extends ServerCommand {
      * @param server a spigot server
      * @param debug <code>true</code> for debug mode
      */
-    public SetDebugModeCommand(ISpigotServerWorkingCopy server, boolean debug) {
+    public SetDebugModeCommand(IMinecraftServerWorkingCopy server, boolean debug) {
         super(server, "Change debug mode");
         this.debug = debug;
     }
@@ -28,15 +28,17 @@ public class SetDebugModeCommand extends ServerCommand {
     /**
      * Execute the command.
      */
+    @Override
     public void execute() {
-        oldDebug = server.isDebug();
-        server.setDebug(debug);
+        this.oldDebug = this.server.isDebug();
+        this.server.setDebug(this.debug);
     }
 
     /**
      * Undo the command.
      */
+    @Override
     public void undo() {
-        server.setDebug(oldDebug);
+        this.server.setDebug(this.oldDebug);
     }
 }

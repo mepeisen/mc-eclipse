@@ -10,40 +10,58 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotConfigurationWorkingCopy;
+import eu.xworlds.mceclipse.server.IMinecraftConfigurationWorkingCopy;
 
 /**
  * @author mepeisen
  *
  */
-public abstract class ConfigurationCommand extends AbstractOperation {
-    protected ISpigotConfigurationWorkingCopy configuration;
-
+public abstract class ConfigurationCommand extends AbstractOperation
+{
+    
+    /** server config. */
+    protected IMinecraftConfigurationWorkingCopy<?, ?> configuration;
+    
     /**
      * ConfigurationCommand constructor comment.
      * 
-     * @param configuration a spigot configuration
-     * @param label a label
+     * @param configuration
+     *            a spigot configuration
+     * @param label
+     *            a label
      */
-    public ConfigurationCommand(ISpigotConfigurationWorkingCopy configuration, String label) {
+    public ConfigurationCommand(IMinecraftConfigurationWorkingCopy<?, ?> configuration, String label)
+    {
         super(label);
         this.configuration = configuration;
     }
-
-    public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+    
+    @Override
+    public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+    {
         return execute(monitor, info);
     }
-
+    
+    /**
+     * execute the command
+     */
     public abstract void execute();
-
-    public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+    
+    @Override
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+    {
         execute();
         return null;
     }
-
+    
+    /**
+     * undo the command
+     */
     public abstract void undo();
-
-    public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+    
+    @Override
+    public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+    {
         undo();
         return null;
     }

@@ -4,18 +4,15 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import org.eclipse.jdt.launching.IVMInstall;
+import eu.xworlds.mceclipse.server.IMinecraftRuntimeWorkingCopy;
 
 /**
  * @author mepeisen
  *
  */
-public interface ISpigotRuntimeWorkingCopy extends ISpigotRuntime
+public interface ISpigotRuntimeWorkingCopy extends ISpigotRuntime, IMinecraftRuntimeWorkingCopy
 {
-
-    /**
-     * @param defaultVMInstall
-     */
-    void setVMInstall(IVMInstall defaultVMInstall);
+    
+    // empty
     
 }

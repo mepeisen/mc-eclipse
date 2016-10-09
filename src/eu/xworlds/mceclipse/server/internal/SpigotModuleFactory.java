@@ -30,7 +30,7 @@ public class SpigotModuleFactory extends ProjectModuleFactoryDelegate
     @Override
     public ModuleDelegate getModuleDelegate(IModule module)
     {
-        for (Iterator<ModuleDelegate> iter = moduleDelegates.iterator(); iter.hasNext();)
+        for (Iterator<ModuleDelegate> iter = this.moduleDelegates.iterator(); iter.hasNext();)
         {
             ModuleDelegate element = iter.next();
             if (module == element.getModule())
@@ -68,7 +68,7 @@ public class SpigotModuleFactory extends ProjectModuleFactoryDelegate
             if (module != null)
             {
                 if (getModuleDelegate(module) == null)
-                    moduleDelegates.add(moduleDelegate);
+                    this.moduleDelegates.add(moduleDelegate);
             }
         }
         if (module == null)

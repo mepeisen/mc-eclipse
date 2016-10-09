@@ -4,27 +4,15 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.util.List;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.IVMInstall;
+import eu.xworlds.mceclipse.server.IMinecraftRuntime;
 
 /**
  * @author mepeisen
  *
  */
-public interface ISpigotRuntime
+public interface ISpigotRuntime extends IMinecraftRuntime
 {
     
-    boolean isUsingDefaultJRE();
-    
-    IVMInstall getVMInstall();
-    
-    List<IRuntimeClasspathEntry> getRuntimeClasspath();
-    
-    IStatus verifyLocation();
-    
-    IStatus validate();
+    // empty
     
 }

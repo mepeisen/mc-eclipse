@@ -4,19 +4,15 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -28,7 +24,7 @@ import eu.xworlds.mceclipse.McEclipsePlugin;
  * @author mepeisen
  *
  */
-public abstract class SpigotVersionHandler implements ISpigotVersionHandler
+public abstract class SpigotVersionHandler extends AbstractVersionHandler<SpigotServer> implements ISpigotVersionHandler
 {
     
     /**
@@ -44,47 +40,30 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
     protected abstract String getSpigotToolsName();
     
     @Override
-    public IStatus verifyInstallPath(IPath installPath)
+    protected IStatus checkJar(JarFile jar) throws IOException
     {
-        File[] jarfiles = installPath.toFile().listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file)
-            {
-                return file.isFile() && file.getName().endsWith(".jar"); //$NON-NLS-1$
-            }
-        });
-        if (jarfiles != null && jarfiles.length > 0)
+        final ZipEntry entry = jar.getEntry("META-INF/maven/org.spigotmc/spigot/pom.properties"); //$NON-NLS-1$
+        if (entry != null && !entry.isDirectory())
         {
-            try
+            final Properties props = new Properties();
+            try (final InputStream is = jar.getInputStream(entry))
             {
-                for (final File f : jarfiles)
-                {
-                    try (final JarFile jar = new JarFile(f))
-                    {
-                        final ZipEntry entry = jar.getEntry("META-INF/maven/org.spigotmc/spigot/pom.properties"); //$NON-NLS-1$
-                        if (entry != null && !entry.isDirectory())
-                        {
-                            final Properties props = new Properties();
-                            try (final InputStream is = jar.getInputStream(entry))
-                            {
-                                props.load(is);
-                            }
-                            final String version = props.getProperty("version"); //$NON-NLS-1$
-                            if (version.equals(getPomVersion()))
-                            {
-                                return Status.OK_STATUS;
-                            }
-                            return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "wrong version");
-                        }
-                    }
-                }
+                props.load(is);
             }
-            catch (@SuppressWarnings("unused") Exception ex)
+            final String version = props.getProperty("version"); //$NON-NLS-1$
+            if (version.equals(getPomVersion()))
             {
-                // silently ignore
+                return Status.OK_STATUS;
             }
+            return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "wrong version");
         }
-        return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "no spigot jar found");
+        return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "no pom.properties found");
+    }
+
+    @Override
+    protected AbstractServerBehaviour getBehaviour(SpigotServer server)
+    {
+        return (SpigotServerBehaviour)server.getServer().loadAdapter(SpigotServerBehaviour.class, null);
     }
     
     @Override
@@ -97,41 +76,12 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
     @Override
     public List<IRuntimeClasspathEntry> getRuntimeClasspath(IPath installPath)
     {
-        File[] jarfiles = installPath.toFile().listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file)
-            {
-                return file.isFile() && file.getName().endsWith(".jar"); //$NON-NLS-1$
-            }
-        });
-        final List<IRuntimeClasspathEntry> result = new ArrayList<>();
-        result.add(JavaRuntime.newArchiveRuntimeClasspathEntry(McEclipsePlugin.getSpigotToolsJar(this.getSpigotToolsName())));
-        if (jarfiles != null && jarfiles.length > 0)
-        {
-            for (final File jarFile : jarfiles)
-            {
-                result.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(jarFile.getAbsolutePath())));
-            }
-        }
+        final List<IRuntimeClasspathEntry> result = super.getRuntimeClasspath(installPath);
+        
+        // add tools jar as first entry
+        result.add(0, JavaRuntime.newArchiveRuntimeClasspathEntry(McEclipsePlugin.getSpigotToolsJar(this.getSpigotToolsName())));
+        
         return result;
-    }
-    
-    @Override
-    public String[] getRuntimeProgramArguments(IPath configPath, boolean debug, boolean starting)
-    {
-        return new String[0];
-    }
-    
-    @Override
-    public String[] getExcludedRuntimeProgramArguments(boolean debug, boolean starting)
-    {
-        return null;
-    }
-    
-    @Override
-    public String[] getRuntimeVMArguments(IPath installPath, IPath configPath, IPath deployPath)
-    {
-        return new String[0];
     }
     
     @Override
@@ -154,43 +104,6 @@ public abstract class SpigotVersionHandler implements ISpigotVersionHandler
             return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Unsupported library version");
         }
         return new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Unsupported module type");
-    }
-    
-    @Override
-    public IPath getRuntimeBaseDirectory(SpigotServer server)
-    {
-        if (server.isTestEnvironment())
-        {
-            String baseDir = server.getInstanceDirectory();
-            // If test mode and no instance directory specified, use temporary directory
-            if (baseDir == null)
-            {
-                SpigotServerBehaviour tsb = (SpigotServerBehaviour)server.getServer().loadAdapter(SpigotServerBehaviour.class, null);
-                return tsb.getTempDirectory();
-            }
-            
-            IPath path = new Path(baseDir);
-            if (!path.isAbsolute())
-            {
-                IPath rootPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-                path = rootPath.append(path);
-            }
-            return path;
-        } 
-
-        return server.getServer().getRuntime().getLocation();
-    }
-    
-    @Override
-    public IStatus prepareRuntimeDirectory(IPath baseDir)
-    {
-        return Status.OK_STATUS;
-    }
-    
-    @Override
-    public IStatus prepareDeployDirectory(IPath deployPath)
-    {
-        return Status.OK_STATUS;
     }
     
 }

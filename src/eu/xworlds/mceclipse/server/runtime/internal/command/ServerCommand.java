@@ -10,8 +10,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotServerWorkingCopy;
-import eu.xworlds.mceclipse.server.runtime.internal.SpigotServer;
+import eu.xworlds.mceclipse.server.IMinecraftServerWorkingCopy;
 
 /**
  * @author mepeisen
@@ -21,7 +20,7 @@ public abstract class ServerCommand extends AbstractOperation
 {
     
     /** spigot server. */
-    protected SpigotServer server;
+    protected IMinecraftServerWorkingCopy server;
     
     /**
      * ServerCommand constructor comment.
@@ -31,10 +30,10 @@ public abstract class ServerCommand extends AbstractOperation
      * @param label
      *            a label
      */
-    public ServerCommand(ISpigotServerWorkingCopy server, String label)
+    public ServerCommand(IMinecraftServerWorkingCopy server, String label)
     {
         super(label);
-        this.server = (SpigotServer) server;
+        this.server = server;
     }
     
     @Override

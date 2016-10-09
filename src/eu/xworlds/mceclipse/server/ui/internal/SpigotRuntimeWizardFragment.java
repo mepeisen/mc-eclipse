@@ -16,18 +16,30 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
  * @author mepeisen
  *
  */
-public class SpigotRuntimeWizardFragment extends WizardFragment {
+public class SpigotRuntimeWizardFragment extends WizardFragment
+{
+    /**
+     * 
+     */
     protected SpigotRuntimeComposite comp;
-
-    public SpigotRuntimeWizardFragment() {
+    
+    /**
+     * 
+     */
+    public SpigotRuntimeWizardFragment()
+    {
         // do nothing
     }
-
-    public boolean hasComposite() {
+    
+    @Override
+    public boolean hasComposite()
+    {
         return true;
     }
-
-    public boolean isComplete() {
+    
+    @Override
+    public boolean isComplete()
+    {
         IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
         
         if (runtime == null)
@@ -35,27 +47,36 @@ public class SpigotRuntimeWizardFragment extends WizardFragment {
         IStatus status = runtime.validate(null);
         return (status == null || status.getSeverity() != IStatus.ERROR);
     }
-
-    /* (non-Javadoc)
+    
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.eclipse.wst.server.ui.task.WizardFragment#createComposite()
      */
-    public Composite createComposite(Composite parent, IWizardHandle wizard) {
-        comp = new SpigotRuntimeComposite(parent, wizard);
-        return comp;
+    @Override
+    public Composite createComposite(Composite parent, IWizardHandle wizard)
+    {
+        this.comp = new SpigotRuntimeComposite(parent, wizard);
+        return this.comp;
     }
-
-    public void enter() {
-        if (comp != null) {
+    
+    @Override
+    public void enter()
+    {
+        if (this.comp != null)
+        {
             IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-            comp.setRuntime(runtime);
+            this.comp.setRuntime(runtime);
         }
     }
-
-    public void exit() {
+    
+    @Override
+    public void exit()
+    {
         IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
         IPath path = runtime.getLocation();
-//        if (runtime.validate(null).getSeverity() != IStatus.ERROR)
-//            TomcatPlugin.setPreference("location" + runtime.getRuntimeType().getId(), path.toString());
+        // if (runtime.validate(null).getSeverity() != IStatus.ERROR)
+        // TomcatPlugin.setPreference("location" + runtime.getRuntimeType().getId(), path.toString());
     }
-
+    
 }

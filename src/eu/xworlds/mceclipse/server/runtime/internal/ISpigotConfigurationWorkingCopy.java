@@ -4,14 +4,19 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
-import java.beans.PropertyChangeListener;
+import eu.xworlds.mceclipse.server.IMinecraftConfigurationWorkingCopy;
 
 /**
  * @author mepeisen
  *
  */
-public interface ISpigotConfigurationWorkingCopy extends ISpigotConfiguration
+public interface ISpigotConfigurationWorkingCopy extends ISpigotConfiguration, IMinecraftConfigurationWorkingCopy<SpigotPlugin, SpigotLibrary>
 {
+    
+    /**
+     * Property to listen for port modifications
+     */
+    String MODIFY_PORT_PROPERTY = "modifyPort"; //$NON-NLS-1$
     
     /**
      * Sets the current server port.
@@ -20,35 +25,5 @@ public interface ISpigotConfigurationWorkingCopy extends ISpigotConfiguration
      *            new port.
      */
     void setServerPort(int port);
-    
-    /**
-     * Adds a new spigot plugin at given index
-     * @param index
-     * @param plugin
-     */
-    void addSpigotPlugin(int index, SpigotPlugin plugin);
-    
-    /**
-     * Removes spigot plugin at given index
-     * @param index
-     */
-    void removeSpigotPlugin(int index);
-    
-    /**
-     * Adds a new spigot library at given index
-     * @param index
-     * @param library
-     */
-    void addSpigotLibrary(int index, SpigotLibrary library);
-    
-    /**
-     * Removes spigot library at given index
-     * @param index
-     */
-    void removeSpigotLibrary(int index);
-    
-    void addPropertyChangeListener(PropertyChangeListener listener); 
-    void removePropertyChangeListener(PropertyChangeListener listener);
-
     
 }

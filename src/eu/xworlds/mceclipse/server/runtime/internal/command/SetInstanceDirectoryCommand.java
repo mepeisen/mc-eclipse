@@ -4,7 +4,7 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal.command;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotServerWorkingCopy;
+import eu.xworlds.mceclipse.server.IMinecraftServerWorkingCopy;
 
 /**
  * @author mepeisen
@@ -23,7 +23,7 @@ public class SetInstanceDirectoryCommand extends ServerCommand
      * @param server a spigot server
      * @param instanceDir instance directory to set
      */
-    public SetInstanceDirectoryCommand(ISpigotServerWorkingCopy server, String instanceDir) {
+    public SetInstanceDirectoryCommand(IMinecraftServerWorkingCopy server, String instanceDir) {
         super(server, "Spigot Server Path Change");
         this.instanceDir = instanceDir;
     }
@@ -31,21 +31,23 @@ public class SetInstanceDirectoryCommand extends ServerCommand
     /**
      * Execute setting the deploy directory
      */
+    @Override
     public void execute() {
-        oldTestEnvironment = server.isTestEnvironment();
-        oldInstanceDir = server.getInstanceDirectory();
-        if (!oldTestEnvironment)
-            server.setTestEnvironment(true);
-        server.setInstanceDirectory(instanceDir);
+        this.oldTestEnvironment = this.server.isTestEnvironment();
+        this.oldInstanceDir = this.server.getInstanceDirectory();
+        if (!this.oldTestEnvironment)
+            this.server.setTestEnvironment(true);
+        this.server.setInstanceDirectory(this.instanceDir);
     }
 
     /**
      * Restore prior deploy directory
      */
+    @Override
     public void undo() {
-        if (!oldTestEnvironment)
-            server.setTestEnvironment(false);
-        server.setInstanceDirectory(oldInstanceDir);
+        if (!this.oldTestEnvironment)
+            this.server.setTestEnvironment(false);
+        this.server.setInstanceDirectory(this.oldInstanceDir);
     }
 
 }

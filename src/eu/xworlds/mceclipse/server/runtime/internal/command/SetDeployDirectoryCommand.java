@@ -4,7 +4,7 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal.command;
 
-import eu.xworlds.mceclipse.server.runtime.internal.ISpigotServerWorkingCopy;
+import eu.xworlds.mceclipse.server.IMinecraftServerWorkingCopy;
 
 /**
  * @author mepeisen
@@ -22,7 +22,7 @@ public class SetDeployDirectoryCommand extends ServerCommand
      * @param deployDir deployment directory to set
      */
 
-    public SetDeployDirectoryCommand(ISpigotServerWorkingCopy server, String deployDir) {
+    public SetDeployDirectoryCommand(IMinecraftServerWorkingCopy server, String deployDir) {
         super(server, "Spigot Deploy Path Change");
         this.deployDir = deployDir;
     }
@@ -30,16 +30,18 @@ public class SetDeployDirectoryCommand extends ServerCommand
     /**
      * Execute setting the deploy directory
      */
+    @Override
     public void execute() {
-        oldDeployDir = server.getDeployDirectory();
-        server.setDeployDirectory(deployDir);
+        this.oldDeployDir = this.server.getDeployDirectory();
+        this.server.setDeployDirectory(this.deployDir);
     }
 
     /**
      * Restore prior deploy directory
      */
+    @Override
     public void undo() {
-        server.setDeployDirectory(oldDeployDir);
+        this.server.setDeployDirectory(this.oldDeployDir);
     }
 
 }
