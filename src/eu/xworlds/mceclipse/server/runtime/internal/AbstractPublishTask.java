@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -199,15 +201,15 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                 final IJavaProject javaProject = JavaCore.create(mod.getProject());
                 props.setProperty("classes", ResourcesPlugin.getWorkspace().getRoot().getFolder(javaProject.getOutputLocation()).getLocation().toOSString()); //$NON-NLS-1$
                 final List<String> additionalCP = new ArrayList<>();
-                sumUpAdditionalCp(additionalCP, javaProject);
-                props.setProperty("cpsize", String.valueOf(additionalCP.size())); //$NON-NLS-1$
-                for (int i = 0; i < additionalCP.size(); i++)
-                {
-                    props.setProperty("cptype" + i, "file"); //$NON-NLS-1$ //$NON-NLS-2$
-                    props.setProperty("cpfile" + i, additionalCP.get(i)); //$NON-NLS-1$
-                }
                 try
                 {
+                    sumUpAdditionalCp(additionalCP, javaProject);
+                    props.setProperty("cpsize", String.valueOf(additionalCP.size())); //$NON-NLS-1$
+                    for (int i = 0; i < additionalCP.size(); i++)
+                    {
+                        props.setProperty("cptype" + i, "file"); //$NON-NLS-1$ //$NON-NLS-2$
+                        props.setProperty("cpfile" + i, additionalCP.get(i)); //$NON-NLS-1$
+                    }
                     try (final FileOutputStream fos = new FileOutputStream(eclipseProjectPath.toFile()))
                     {
                         props.store(fos, null);
@@ -230,8 +232,9 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
          * @param project
          *            the project to fetch classpath from
          * @throws CoreException
+         * @throws IOException 
          */
-        private void addProjectToCp(List<String> additionalCP, IProject project) throws CoreException
+        private void addProjectToCp(List<String> additionalCP, IProject project) throws CoreException, IOException
         {
             final IJavaProject javaProject = JavaCore.create(project);
             if (javaProject != null)
@@ -278,8 +281,9 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
          * @param javaProject
          *            the java project to fetch classpath from
          * @throws CoreException
+         * @throws IOException 
          */
-        private void sumUpAdditionalCp(List<String> additionalCP, IJavaProject javaProject) throws CoreException
+        private void sumUpAdditionalCp(List<String> additionalCP, IJavaProject javaProject) throws CoreException, IOException
         {
             final IMavenProjectFacade mp = MavenPlugin.getMavenProjectRegistry().getProject(javaProject.getProject());
             if (mp != null)
@@ -306,7 +310,7 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                             if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
                             {
                                 final String lib = cpe.getPath().toFile().getAbsolutePath();
-                                if (!additionalCP.contains(lib))
+                                if (!additionalCP.contains(lib) && !isFiltered(lib))
                                 {
                                     additionalCP.add(lib);
                                 }
@@ -332,8 +336,7 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                 if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
                 {
                     final String lib = cpe.getPath().toFile().getAbsolutePath();
-                    // TODO Filter main spigot/bungee jar files
-                    if (!additionalCP.contains(lib))
+                    if (!additionalCP.contains(lib) && !isFiltered(lib))
                     {
                         additionalCP.add(lib);
                     }
@@ -344,6 +347,49 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                     addProjectToCp(additionalCP, prj);
                 }
             }
+        }
+
+        /**
+         * Filters main spigot/bungee jar files and other plugins
+         * @param lib
+         * @return true if library is filtered
+         * @throws IOException 
+         */
+        private boolean isFiltered(String lib) throws IOException
+        {
+            try (final JarFile jar = new JarFile(lib))
+            {
+                // check for plugin.yml
+                ZipEntry entry = jar.getEntry("plugin.yml"); //$NON-NLS-1$
+                if (entry != null && !entry.isDirectory())
+                {
+                    // plugins will be filtered
+                    return true;
+                }
+                // check for spigot.jar
+                entry = jar.getEntry("META-INF/maven/org.spigotmc/spigot/pom.properties"); //$NON-NLS-1$
+                if (entry != null && !entry.isDirectory())
+                {
+                    // spigot jars will be filtered
+                    return true;
+                }
+                // check for bungee.jar
+                entry = jar.getEntry("META-INF/maven/net.md-5/bungeecord-proxy/pom.properties"); //$NON-NLS-1$
+                if (entry != null && !entry.isDirectory())
+                {
+                    // bungee jars will be filtered
+                    return true;
+                }
+                // check for bukkit.jar
+                entry = jar.getEntry("org/bukkit/"); //$NON-NLS-1$
+                if (entry != null && entry.isDirectory())
+                {
+                    // bukkit jars will be filtered
+                    return true;
+                }
+            }
+            // not filtered
+            return false;
         }
         
     }
