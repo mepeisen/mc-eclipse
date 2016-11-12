@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -49,7 +50,7 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                 @Override
                 public boolean accept(File file)
                 {
-                    return file.isFile() && file.getName().endsWith(".eclipseproject"); //$NON-NLS-1$
+                    return file.isFile() && (file.getName().endsWith(".eclipseproject") || file.getName().endsWith(".jar")); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             });
             if (prjfiles != null && prjfiles.length > 0)
@@ -135,6 +136,9 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
             final File prjFile = new File(pluginsDir.toFile(), this.module + ".eclipseproject"); //$NON-NLS-1$
             if (prjFile.exists())
                 prjFile.delete();
+            final File jarFile = new File(pluginsDir.toFile(), this.module + ".jar"); //$NON-NLS-1$
+            if (jarFile.exists())
+                jarFile.delete();
         }
     }
     
@@ -190,20 +194,24 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
             for (final IModule mod : this.module)
             {
                 // generate eclipseproject file and deploy to plugins dir
-                final IPath eclipseProjectPath = pluginsDir.append(getName(mod) + ".eclipseproject"); //$NON-NLS-1$
-                final Properties props = new Properties();
                 try
                 {
                     // setup props
                     if (mod.getProject() == null)
                     {
                         // java library
-                        // TODO Find a better way, f.e. ask the module for the java location...
-                        props.setProperty("classes", mod.getName()); //$NON-NLS-1$
+                        final IPath eclipseJarPath = pluginsDir.append(getName(mod) + ".jar"); //$NON-NLS-1$
+                        
+                        final File target = eclipseJarPath.toFile();
+                        if (target.exists()) target.delete();
+                        final File src = new File(mod.getName()); // TODO Find a better way, f.e. ask the module for the java location...
+                        FileUtils.copyFile(src, target);
                     }
                     else
                     {
                         // java project
+                        final IPath eclipseProjectPath = pluginsDir.append(getName(mod) + ".eclipseproject"); //$NON-NLS-1$
+                        final Properties props = new Properties();
                         final CPENode node = CPENodeFactory.create(mod.getProject());
                         props.setProperty("classes", node.getCpFolders().get(0)); //$NON-NLS-1$
                         final List<String> additionalCP = new ArrayList<>();
@@ -219,12 +227,12 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                             props.setProperty("cptype" + i, "file"); //$NON-NLS-1$ //$NON-NLS-2$
                             props.setProperty("cpfile" + i, additionalCP.get(i)); //$NON-NLS-1$
                         }
-                    }
-                    
-                    // save props
-                    try (final FileOutputStream fos = new FileOutputStream(eclipseProjectPath.toFile()))
-                    {
-                        props.store(fos, null);
+                        
+                        // save props
+                        try (final FileOutputStream fos = new FileOutputStream(eclipseProjectPath.toFile()))
+                        {
+                            props.store(fos, null);
+                        }
                     }
                 }
                 catch (IOException e)
