@@ -12,33 +12,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.IClasspathAttribute;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.project.IMavenProjectFacade;
-import org.eclipse.m2e.jdt.IClasspathManager;
-import org.eclipse.m2e.jdt.MavenJdtPlugin;
-import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.PublishTaskDelegate;
 
 import eu.xworlds.mceclipse.McEclipsePlugin;
+import eu.xworlds.mceclipse.server.internal.CPENode;
+import eu.xworlds.mceclipse.server.internal.CPENodeFactory;
 
 /**
  * @author mepeisen
@@ -77,16 +65,17 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
         if (modules != null)
         {
             final int size = modules.size();
+            
+            final Set<IModule> normalized = new HashSet<>();
             for (int i = 0; i < size; i++)
             {
-                final IModule[] module = (IModule[]) modules.get(i);
-                final Integer in = (Integer) kindList.get(i);
-                tasks.add(new PublishOperation2(beh, kind, module, in.intValue()));
-                for (final IModule mod : module)
+                for (final IModule module : (IModule[]) modules.get(i))
                 {
-                    knownModules.remove(mod.getName());
+                    normalized.add(module);
+                    knownModules.remove(getName(module));
                 }
             }
+            tasks.add(new PublishOperation2(beh, kind, normalized.toArray(new IModule[normalized.size()])));
         }
         
         for (final String mod : knownModules)
@@ -97,6 +86,15 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
         return tasks.toArray(new PublishOperation[tasks.size()]);
     }
     
+    /**
+     * @param module
+     * @return normalized name
+     */
+    static String getName(IModule module)
+    {
+        return module.getName().replaceAll("[:\\\\/;]", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     private static final class RemoveOperation2 extends PublishOperation
     {
         protected AbstractServerBehaviour server;
@@ -145,7 +143,6 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
         protected AbstractServerBehaviour server;
         protected IModule[]             module;
         protected int                   kind;
-        protected int                   deltaKind;
         private IPath                   base;
         
         /**
@@ -157,16 +154,13 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
          *            kind of publish
          * @param module
          *            module to publish
-         * @param deltaKind
-         *            kind of change
          */
-        public PublishOperation2(AbstractServerBehaviour server, int kind, IModule[] module, int deltaKind)
+        public PublishOperation2(AbstractServerBehaviour server, int kind, IModule[] module)
         {
             super("Publish to server", "Publish Spigot plugin to Spigot server");
             this.server = server;
             this.module = module;
             this.kind = kind;
-            this.deltaKind = deltaKind;
             this.base = server.getRuntimeBaseDirectory();
         }
         
@@ -196,20 +190,38 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
             for (final IModule mod : this.module)
             {
                 // generate eclipseproject file and deploy to plugins dir
-                final IPath eclipseProjectPath = pluginsDir.append(mod.getProject().getName() + ".eclipseproject"); //$NON-NLS-1$
+                final IPath eclipseProjectPath = pluginsDir.append(getName(mod) + ".eclipseproject"); //$NON-NLS-1$
                 final Properties props = new Properties();
-                final IJavaProject javaProject = JavaCore.create(mod.getProject());
-                props.setProperty("classes", ResourcesPlugin.getWorkspace().getRoot().getFolder(javaProject.getOutputLocation()).getLocation().toOSString()); //$NON-NLS-1$
-                final List<String> additionalCP = new ArrayList<>();
                 try
                 {
-                    sumUpAdditionalCp(additionalCP, javaProject);
-                    props.setProperty("cpsize", String.valueOf(additionalCP.size())); //$NON-NLS-1$
-                    for (int i = 0; i < additionalCP.size(); i++)
+                    // setup props
+                    if (mod.getProject() == null)
                     {
-                        props.setProperty("cptype" + i, "file"); //$NON-NLS-1$ //$NON-NLS-2$
-                        props.setProperty("cpfile" + i, additionalCP.get(i)); //$NON-NLS-1$
+                        // java library
+                        // TODO Find a better way, f.e. ask the module for the java location...
+                        props.setProperty("classes", mod.getName()); //$NON-NLS-1$
                     }
+                    else
+                    {
+                        // java project
+                        final CPENode node = CPENodeFactory.create(mod.getProject());
+                        props.setProperty("classes", node.getCpFolders().get(0)); //$NON-NLS-1$
+                        final List<String> additionalCP = new ArrayList<>();
+                        if (node.getCpFolders().size() > 1)
+                        {
+                            additionalCP.addAll(node.getCpFolders().subList(1, node.getCpFolders().size()));
+                        }
+
+                        sumUpAdditionalCp(additionalCP, node);
+                        props.setProperty("cpsize", String.valueOf(additionalCP.size())); //$NON-NLS-1$
+                        for (int i = 0; i < additionalCP.size(); i++)
+                        {
+                            props.setProperty("cptype" + i, "file"); //$NON-NLS-1$ //$NON-NLS-2$
+                            props.setProperty("cpfile" + i, additionalCP.get(i)); //$NON-NLS-1$
+                        }
+                    }
+                    
+                    // save props
                     try (final FileOutputStream fos = new FileOutputStream(eclipseProjectPath.toFile()))
                     {
                         props.store(fos, null);
@@ -229,167 +241,40 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
          * 
          * @param additionalCP
          *            target list
-         * @param project
-         *            the project to fetch classpath from
+         * @param node
+         *            classpath node
          * @throws CoreException
          * @throws IOException 
          */
-        private void addProjectToCp(List<String> additionalCP, IProject project) throws CoreException, IOException
+        private void sumUpAdditionalCp(List<String> additionalCP, CPENode node) throws CoreException, IOException
         {
-            final IJavaProject javaProject = JavaCore.create(project);
-            if (javaProject != null)
+            for (final CPENode child : node.getChildren())
             {
-                if (FacetedProjectFramework.isFacetedProject(javaProject.getProject()))
+                switch (child.getModuleType())
                 {
-                    // check for library or plugin
-                    if (FacetedProjectFramework.hasProjectFacet(javaProject.getProject(), "spigot.plugin")) //$NON-NLS-1$
-                    {
-                        // silently ignore; should be added as own module
-                        return;
-                    }
-                    if (FacetedProjectFramework.hasProjectFacet(javaProject.getProject(), "spigot.library")) //$NON-NLS-1$
-                    {
-                        // silently ignore; should be added as own module
-                        return;
-                    }
-                    if (FacetedProjectFramework.hasProjectFacet(javaProject.getProject(), "bungee.plugin")) //$NON-NLS-1$
-                    {
-                        // silently ignore; should be added as own module
-                        return;
-                    }
-                    if (FacetedProjectFramework.hasProjectFacet(javaProject.getProject(), "bungee.library")) //$NON-NLS-1$
-                    {
-                        // silently ignore; should be added as own module
-                        return;
-                    }
-                }
-                
-                final String out = ResourcesPlugin.getWorkspace().getRoot().getFolder(javaProject.getOutputLocation()).getLocation().toOSString();
-                if (!additionalCP.contains(out))
-                {
-                    additionalCP.add(out);
-                    sumUpAdditionalCp(additionalCP, javaProject);
-                }
-            }
-        }
-        
-        /**
-         * sum up additional classpath entries
-         * 
-         * @param additionalCP
-         *            target list
-         * @param javaProject
-         *            the java project to fetch classpath from
-         * @throws CoreException
-         * @throws IOException 
-         */
-        private void sumUpAdditionalCp(List<String> additionalCP, IJavaProject javaProject) throws CoreException, IOException
-        {
-            final IMavenProjectFacade mp = MavenPlugin.getMavenProjectRegistry().getProject(javaProject.getProject());
-            if (mp != null)
-            {
-                // get non provided classpath
-                try
-                {
-                    final IClasspathManager cpm = MavenJdtPlugin.getDefault().getBuildpathManager();
-                    final IClasspathEntry[] entries = cpm.getClasspath(javaProject.getProject(), 1, true, new NullProgressMonitor()); // 1 == runtime || provided || system
-                    for (final IClasspathEntry cpe : entries)
-                    {
-                        // check for provided entry
-                        boolean isProvided = false;
-                        for (final IClasspathAttribute attribute : cpe.getExtraAttributes())
+                    default:
+                    case BukkitJar:
+                    case BungeeJar:
+                    case SpigotJar:
+                        // filter me
+                        break;
+                    case Library:
+                        // classic java library
+                        if (!child.isProvided())
                         {
-                            if ("maven.scope".equals(attribute.getName())) //$NON-NLS-1$
-                            {
-                                isProvided = "provided".equals(attribute.getValue()); //$NON-NLS-1$
-                                break;
-                            }
+                            additionalCP.addAll(child.getCpFolders());
                         }
-                        if (!isProvided)
-                        {
-                            if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
-                            {
-                                final String lib = cpe.getPath().toFile().getAbsolutePath();
-                                if (!additionalCP.contains(lib) && !isFiltered(lib))
-                                {
-                                    additionalCP.add(lib);
-                                }
-                            }
-                            else if (cpe.getEntryKind() == IClasspathEntry.CPE_PROJECT)
-                            {
-                                final IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
-                                addProjectToCp(additionalCP, prj);
-                            }
-                        }
-                    }
+                        break;
+                    case BungeeLibrary:
+                    case BungeePlugin:
+                    case SpigotLibrary:
+                    case SpigotPlugin:
+                    case UnknownPlugin:
+                        // filter me, will be added as module itself
+                        break;
                 }
-                catch (Exception ex)
-                {
-                    throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Error fetching maven classpath", ex));
-                }
-                return;
+                sumUpAdditionalCp(additionalCP, child);
             }
-            
-            // classic java project
-            for (final IClasspathEntry cpe : javaProject.getRawClasspath())
-            {
-                if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
-                {
-                    final String lib = cpe.getPath().toFile().getAbsolutePath();
-                    if (!additionalCP.contains(lib) && !isFiltered(lib))
-                    {
-                        additionalCP.add(lib);
-                    }
-                }
-                else if (cpe.getEntryKind() == IClasspathEntry.CPE_PROJECT)
-                {
-                    final IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
-                    addProjectToCp(additionalCP, prj);
-                }
-            }
-        }
-
-        /**
-         * Filters main spigot/bungee jar files and other plugins
-         * @param lib
-         * @return true if library is filtered
-         * @throws IOException 
-         */
-        private boolean isFiltered(String lib) throws IOException
-        {
-            try (final JarFile jar = new JarFile(lib))
-            {
-                // check for plugin.yml
-                ZipEntry entry = jar.getEntry("plugin.yml"); //$NON-NLS-1$
-                if (entry != null && !entry.isDirectory())
-                {
-                    // plugins will be filtered
-                    return true;
-                }
-                // check for spigot.jar
-                entry = jar.getEntry("META-INF/maven/org.spigotmc/spigot/pom.properties"); //$NON-NLS-1$
-                if (entry != null && !entry.isDirectory())
-                {
-                    // spigot jars will be filtered
-                    return true;
-                }
-                // check for bungee.jar
-                entry = jar.getEntry("META-INF/maven/net.md-5/bungeecord-proxy/pom.properties"); //$NON-NLS-1$
-                if (entry != null && !entry.isDirectory())
-                {
-                    // bungee jars will be filtered
-                    return true;
-                }
-                // check for bukkit.jar
-                entry = jar.getEntry("org/bukkit/"); //$NON-NLS-1$
-                if (entry != null && entry.isDirectory())
-                {
-                    // bukkit jars will be filtered
-                    return true;
-                }
-            }
-            // not filtered
-            return false;
         }
         
     }

@@ -13,7 +13,7 @@ import org.eclipse.wst.server.core.util.ProjectModule;
  */
 public class SpigotModule extends ProjectModule
 {
-
+    
     /**
      * @param project
      */
@@ -21,7 +21,7 @@ public class SpigotModule extends ProjectModule
     {
         super(project);
     }
-
+    
     /**
      * 
      */

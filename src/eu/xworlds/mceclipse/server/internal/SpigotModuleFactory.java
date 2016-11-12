@@ -25,7 +25,8 @@ import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
 public class SpigotModuleFactory extends ProjectModuleFactoryDelegate
 {
     
-    protected List<ModuleDelegate> moduleDelegates = new ArrayList<ModuleDelegate>();
+    /** existing delegates. */
+    protected List<ModuleDelegate> moduleDelegates = new ArrayList<>();
     
     @Override
     public ModuleDelegate getModuleDelegate(IModule module)

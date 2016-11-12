@@ -4,19 +4,32 @@
 
 package eu.xworlds.mceclipse.server.runtime.internal;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleType;
+import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.Module;
 
 import eu.xworlds.mceclipse.McEclipsePlugin;
 import eu.xworlds.mceclipse.server.IMinecraftConfigurationWorkingCopy;
 import eu.xworlds.mceclipse.server.IMinecraftRuntime;
+import eu.xworlds.mceclipse.server.internal.BungeeJarModule;
+import eu.xworlds.mceclipse.server.internal.CPENode;
+import eu.xworlds.mceclipse.server.internal.CPENodeFactory;
+import eu.xworlds.mceclipse.server.internal.CPENodeType;
 
 /**
  * @author mepeisen
@@ -78,23 +91,90 @@ public class BungeeServer extends AbstractServer<BungeeServer, BungeePlugin, Bun
     @Override
     public IModule[] getChildModules(IModule[] module)
     {
-        if (module == null)
+        if (module == null || module.length == 0)
             return null;
+        final Set<IModule> result = new HashSet<>();
         
-//        IModuleType moduleType = module[0].getModuleType();
-//        
-//        if (module.length == 1 && moduleType != null && "jst.web".equals(moduleType.getId()))
-//        {
-//            IWebModule webModule = (IWebModule) module[0].loadAdapter(IWebModule.class, null);
-//            if (webModule != null)
-//            {
-//                IModule[] modules = webModule.getModules();
-//                // if (modules != null)
-//                // System.out.println(modules.length);
-//                return modules;
-//            }
-//        }
-        return new IModule[0];
+        for (final IModule parent : module)
+        {
+            final IModuleType type = parent.getModuleType();
+            if (type != null && (BUNGEE_PLUGIN.equals(type.getId()) || BUNGEE_LIBRARY.equals(type.getId())))
+            {
+                final IProject project = parent.getProject();
+                if (project == null)
+                {
+                    // no other modules
+                }
+                else
+                {
+                    getChildModules(result, project);
+                }
+            }
+        }
+
+        for (final IModule parent : module)
+        {
+            result.remove(parent);
+        }
+
+        return result.toArray(new IModule[result.size()]);
+    }
+    
+    /**
+     * @param result
+     * @param project
+     */
+    private void getChildModules(Set<IModule> result, IProject project)
+    {
+        try
+        {
+            final IJavaProject javaProject = JavaCore.create(project);
+            if (javaProject != null)
+            {
+                final CPENode projectNode = CPENodeFactory.create(project);
+                for (final CPENode child : projectNode.getChildren())
+                {
+
+                    switch (child.getModuleType())
+                    {
+                        case BukkitJar:
+                        case BungeeJar:
+                        case SpigotLibrary:
+                        case SpigotPlugin:
+                        case Library:
+                        case SpigotJar:
+                        default:
+                            // ignore
+                            break;
+                        case BungeeLibrary:
+                        case BungeePlugin:
+                        case UnknownPlugin:
+                            if (child.getNodeType() == CPENodeType.JavaProject)
+                            {
+                                for (final IModule module : ServerUtil.getModules(child.getProject()))
+                                {
+                                    if (module.getModuleType().getId().startsWith("bungee.")) //$NON-NLS-1$
+                                    {
+                                        result.add(module);
+                                    }
+                                }
+                            }
+                            else if (child.getNodeType() == CPENodeType.JarFile)
+                            {
+                                final BungeeJarModule moduleDelegate = new BungeeJarModule(child.getJarFile());
+                                final IModule module = new Module(null, child.getJarFile(), child.getJarFile(), "bungee.plugin", "1.0", null);
+                                moduleDelegate.initialize(module);
+                                result.add(module);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        catch (CoreException ex)
+        {
+            // TODO logging
+        }
     }
     
     @Override

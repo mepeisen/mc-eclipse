@@ -863,6 +863,23 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
          <image
+         	id="eu.xworlds.mceclipse.server.spigot.plugin.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="spigot.plugin" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.library.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="spigot.library" />
+         <image
+         	id="eu.xworlds.mceclipse.server.bungee.plugin.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="bungee.plugin" />
+         <image
+         	id="eu.xworlds.mceclipse.server.bungee.library.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="bungee.library" />
+         	
+         <image
          	id="eu.xworlds.mceclipse.server.bungee.1_10.image"
          	icon="icons/obj16/minecraft.png"
          	typeIds="eu.xworlds.mceclipse.server.bungee.1_10" />
