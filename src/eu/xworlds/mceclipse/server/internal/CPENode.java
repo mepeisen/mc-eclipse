@@ -72,6 +72,10 @@ public class CPENode
     public void setProvided(boolean isProvided)
     {
         this.isProvided = isProvided;
+        if (isProvided)
+        {
+            this.children.forEach(c -> c.setProvided(true));
+        }
     }
 
     /**
@@ -136,6 +140,10 @@ public class CPENode
     public void setRuntime(boolean isRuntime)
     {
         this.isRuntime = isRuntime;
+        if (isRuntime)
+        {
+            this.children.forEach(c -> c.setRuntime(true));
+        }
     }
     
 }
