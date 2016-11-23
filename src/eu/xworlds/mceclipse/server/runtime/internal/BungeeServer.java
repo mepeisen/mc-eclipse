@@ -81,6 +81,8 @@ public class BungeeServer extends AbstractServer<BungeeServer, BungeePlugin, Bun
         BungeeConfiguration spigotConfig = null;
         if (id.indexOf("1_10") > 0) //$NON-NLS-1$
             spigotConfig = new Bungee110Configuration(folder);
+        else if (id.indexOf("1_11") > 0) //$NON-NLS-1$
+            spigotConfig = new Bungee111Configuration(folder);
         else
         {
             throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, 0, "Unknown bungee server version", null));

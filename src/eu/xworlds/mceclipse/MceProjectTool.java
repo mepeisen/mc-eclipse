@@ -147,7 +147,7 @@ public class MceProjectTool
     {
         model.getProperties().setProperty("maven.compiler.source", "1.8"); //$NON-NLS-1$ //$NON-NLS-2$
         model.getProperties().setProperty("maven.compiler.target", "1.8"); //$NON-NLS-1$ //$NON-NLS-2$
-        model.getProperties().setProperty("spigot.version", "1.10.2-R0.1-SNAPSHOT"); //$NON-NLS-1$ //$NON-NLS-2$
+        model.getProperties().setProperty("spigot.version", "1.11-R0.1-SNAPSHOT"); //$NON-NLS-1$ //$NON-NLS-2$
         
         final Dependency dep1 = new Dependency();
         dep1.setGroupId("org.spigotmc"); //$NON-NLS-1$
@@ -173,7 +173,7 @@ public class MceProjectTool
     {
         model.getProperties().setProperty("maven.compiler.source", "1.8"); //$NON-NLS-1$ //$NON-NLS-2$
         model.getProperties().setProperty("maven.compiler.target", "1.8"); //$NON-NLS-1$ //$NON-NLS-2$
-        model.getProperties().setProperty("bungee.version", "1.10-SNAPSHOT"); //$NON-NLS-1$ //$NON-NLS-2$
+        model.getProperties().setProperty("bungee.version", "1.11-SNAPSHOT"); //$NON-NLS-1$ //$NON-NLS-2$
         
         final Dependency dep1 = new Dependency();
         dep1.setGroupId("net.md-5"); //$NON-NLS-1$

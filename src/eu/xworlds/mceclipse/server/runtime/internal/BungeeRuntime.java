@@ -37,6 +37,8 @@ public class BungeeRuntime extends AbstractRuntime implements IBungeeRuntimeWork
     {
         if (id.contains("1_10")) //$NON-NLS-1$
             return new Bungee110VersionHandler();
+        if (id.contains("1_11")) //$NON-NLS-1$
+            return new Bungee111VersionHandler();
         throw new IllegalStateException("Unknown runtime version: " + id);
     }
     

@@ -27,6 +27,7 @@ public class BungeeRuntimeLocator extends RuntimeLocatorDelegate
     
     /** runtime types. */
     protected static final String[] runtimeTypes = new String[] { "eu.xworlds.mceclipse.server.runtime.bungee.1_10", //$NON-NLS-1$
+            "eu.xworlds.mceclipse.server.runtime.bungee.1_11", //$NON-NLS-1$
     };
     
     @Override
