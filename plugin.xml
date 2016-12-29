@@ -137,6 +137,15 @@
         <moduleType types="spigot.plugin" versions="1.0" />
         <moduleType types="spigot.lib" versions="1.0" />
     </runtimeType>
+   	<runtimeType
+         id="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2"
+         name="Spigot 1.11.2"
+         version="1.11.2"
+         class="eu.xworlds.mceclipse.server.runtime.internal.SpigotRuntime"
+         >
+        <moduleType types="spigot.plugin" versions="1.0" />
+        <moduleType types="spigot.lib" versions="1.0" />
+    </runtimeType>
     
    </extension>
    
@@ -376,6 +385,20 @@
            class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
            behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
        </serverType>
+       <serverType
+           id="eu.xworlds.mceclipse.server.spigot.1_11_2"
+           name="Spigot 1.11.2"
+           supportsRemoteHosts="false"
+           runtime="true"
+           startTimeout="50000"
+           stopTimeout="50000"
+           initialState="stopped"
+           hasConfiguration="true"
+           launchConfigId="eu.xworlds.mceclipse.server.spigot.launchConfigurationType"
+           runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2"
+           class="eu.xworlds.mceclipse.server.runtime.internal.SpigotServer"
+           behaviourClass="eu.xworlds.mceclipse.server.runtime.internal.SpigotServerBehaviour">
+       </serverType>
    </extension>
    
    <extension
@@ -460,6 +483,7 @@
        <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.10" />
        <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.10.2" />
        <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.11" />
+       <runtime-component-version type="eu.xworlds.mceclipse.server.spigot" version="1.11.2" />
        <adapter>
            <runtime-component id="eu.xworlds.mceclipse.server.spigot" />
            <factory class="org.eclipse.jst.server.core.internal.RuntimeClasspathProvider$Factory" />
@@ -558,6 +582,10 @@
           <facet id="jst.java" version="[1.8" />
        </supported>
        <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.11.2" />
+          <facet id="jst.java" version="[1.8" />
+       </supported>
+       <supported>
           <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8" />
           <facet id="spigot.plugin" version="1.0" />
        </supported>
@@ -610,6 +638,10 @@
           <facet id="spigot.plugin" version="1.0" />
        </supported>
        <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.11.2" />
+          <facet id="spigot.plugin" version="1.0" />
+       </supported>
+       <supported>
           <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.8" />
           <facet id="spigot.lib" version="1.0" />
        </supported>
@@ -659,6 +691,10 @@
        </supported>
        <supported>
           <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.11" />
+          <facet id="spigot.lib" version="1.0" />
+       </supported>
+       <supported>
+          <runtime-component id="eu.xworlds.mceclipse.server.spigot" version="1.11.2" />
           <facet id="spigot.lib" version="1.0" />
        </supported>
    </extension>
@@ -739,6 +775,10 @@
              runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_11"
              runtime-component="eu.xworlds.mceclipse.server.spigot"
              version="1.11" />
+         <runtimeFacetMapping
+             runtimeTypeId="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2"
+             runtime-component="eu.xworlds.mceclipse.server.spigot"
+             version="1.11.2" />
    </extension>
    
    <extension point="org.eclipse.wst.server.core.installableRuntimes">
@@ -846,6 +886,13 @@
           archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.11.zip" 
           archivePath="spigot-1.11"
           archiveSize="20739562"
+          fileCount="3"/>
+       <runtime 
+          id="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2" 
+          licenseUrl="http://minecraft.xworlds.eu/spigot/LICENSE.txt" 
+          archiveUrl="http://minecraft.xworlds.eu/spigot/spigot-1.11.2.zip" 
+          archivePath="spigot-1.11.2"
+          archiveSize="20772180"
           fileCount="3"/>
    </extension>
    
@@ -1035,6 +1082,10 @@
          	id="eu.xworlds.mceclipse.server.spigot.1_11.image"
          	icon="icons/obj16/minecraft.png"
          	typeIds="eu.xworlds.mceclipse.server.spigot.1_11" />
+         <image
+         	id="eu.xworlds.mceclipse.server.spigot.1_11_2.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.spigot.1_11_2" />
          	
          <image
          	id="eu.xworlds.mceclipse.server.runtime.bungee.1_10.image"
@@ -1097,6 +1148,10 @@
          	id="eu.xworlds.mceclipse.server.runtime.spigot.1_11.image"
          	icon="icons/obj16/minecraft.png"
          	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_11" />
+         <image
+         	id="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2.image"
+         	icon="icons/obj16/minecraft.png"
+         	typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2" />
    </extension>
    
    <extension
@@ -1249,6 +1304,10 @@
          <fragment
              id="eu.xworlds.mceclipse.server.runtime.spigot.1_11"
              typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_11"
+             class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
+         <fragment
+             id="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2"
+             typeIds="eu.xworlds.mceclipse.server.runtime.spigot.1_11_2"
              class="eu.xworlds.mceclipse.server.ui.internal.SpigotRuntimeWizardFragment" />
    </extension>
    

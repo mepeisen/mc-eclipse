@@ -102,6 +102,8 @@ public class SpigotServer extends AbstractServer<SpigotServer, SpigotPlugin, Spi
             spigotConfig = new Spigot1102Configuration(folder);
         else if (id.indexOf("1_10") > 0) //$NON-NLS-1$
             spigotConfig = new Spigot110Configuration(folder);
+        else if (id.indexOf("1_11_2") > 0) //$NON-NLS-1$
+            spigotConfig = new Spigot1112Configuration(folder);
         else if (id.indexOf("1_11") > 0) //$NON-NLS-1$
             spigotConfig = new Spigot111Configuration(folder);
         else
