@@ -18,11 +18,16 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+
+import eu.xworlds.mceclipse.server.internal.CPENodeFactory;
 
 public class McEclipsePlugin extends AbstractUIPlugin
 {
@@ -40,6 +45,8 @@ public class McEclipsePlugin extends AbstractUIPlugin
     private static final String      URL_WIZBAN       = "wizban/";
     
     protected Map                    imageDescriptors = new HashMap();
+
+    private CPENodeFactory nodeFactory;
     
     /**
      * 
@@ -47,8 +54,23 @@ public class McEclipsePlugin extends AbstractUIPlugin
     public McEclipsePlugin()
     {
         singleton = this;
+        this.nodeFactory = new CPENodeFactory();
     }
     
+    @Override
+    public void start(BundleContext context) throws Exception
+    {
+        MavenPlugin.getMavenProjectRegistry().addMavenProjectChangedListener(this.nodeFactory);
+        super.start(context);
+    }
+
+    @Override
+    public void stop(BundleContext context) throws Exception
+    {
+        MavenPlugin.getMavenProjectRegistry().removeMavenProjectChangedListener(this.nodeFactory);
+        super.stop(context);
+    }
+
     @Override
     protected ImageRegistry createImageRegistry()
     {
@@ -210,6 +232,15 @@ public class McEclipsePlugin extends AbstractUIPlugin
     public static String toConfig(InetSocketAddress host)
     {
         return host.getHostName() + ":" + host.getPort(); //$NON-NLS-1$
+    }
+    
+    /**
+     * Returns the class path entry - node factory.
+     * @return class path entry - node factory
+     */
+    public static CPENodeFactory getNodeFactory()
+    {
+        return singleton.nodeFactory;
     }
     
 }

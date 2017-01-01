@@ -5,7 +5,9 @@
 package eu.xworlds.mceclipse.server.internal;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -13,6 +15,8 @@ import java.util.zip.ZipEntry;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -22,7 +26,9 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.project.IMavenProjectChangedListener;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
+import org.eclipse.m2e.core.project.MavenProjectChangedEvent;
 import org.eclipse.m2e.jdt.IClasspathManager;
 import org.eclipse.m2e.jdt.MavenJdtPlugin;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
@@ -33,8 +39,13 @@ import eu.xworlds.mceclipse.McEclipsePlugin;
  * @author mepeisen
  *
  */
-public class CPENodeFactory
+public class CPENodeFactory implements IMavenProjectChangedListener
 {
+    
+    /**
+     * cached node factories
+     */
+    private Map<IPath, CPENode> cachedNodes = new HashMap<>();
     
     /**
      * Creates a class path node for given project.
@@ -42,18 +53,22 @@ public class CPENodeFactory
      * @return class path node.
      * @throws CoreException 
      */
-    public static CPENode create(IProject project) throws CoreException
+    public CPENode create(IProject project) throws CoreException
     {
-        final Set<IProject> knownProjects = new HashSet<>();
-        final Set<String> knownJars = new HashSet<>();
-        try
+        if (!this.cachedNodes.containsKey(project.getFullPath()))
         {
-            return createCPENodeForProject(project, knownProjects, knownJars);
+            final Set<IProject> knownProjects = new HashSet<>();
+            final Set<String> knownJars = new HashSet<>();
+            try
+            {
+                this.cachedNodes.put(project.getFullPath(), createCPENodeForProject(project, knownProjects, knownJars));
+            }
+            catch (IOException ex)
+            {
+                throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "problems calculating cpe nodes", ex));
+            }
         }
-        catch (IOException ex)
-        {
-            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "problems calculating cpe nodes", ex));
-        }
+        return this.cachedNodes.get(project.getFullPath());
     }
 
     /**
@@ -290,6 +305,13 @@ public class CPENodeFactory
         }
         // normal jar file/ library
         return LibType.Jar;
+    }
+
+    @Override
+    public void mavenProjectChanged(MavenProjectChangedEvent[] arg0, IProgressMonitor arg1)
+    {
+        // simply clear out the cache.
+        this.cachedNodes.clear();
     }
     
 }

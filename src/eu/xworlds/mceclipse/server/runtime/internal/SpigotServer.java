@@ -156,7 +156,7 @@ public class SpigotServer extends AbstractServer<SpigotServer, SpigotPlugin, Spi
             final IJavaProject javaProject = JavaCore.create(project);
             if (javaProject != null)
             {
-                final CPENode projectNode = CPENodeFactory.create(project);
+                final CPENode projectNode = McEclipsePlugin.getNodeFactory().create(project);
                 for (final CPENode child : projectNode.getChildren())
                 {
 

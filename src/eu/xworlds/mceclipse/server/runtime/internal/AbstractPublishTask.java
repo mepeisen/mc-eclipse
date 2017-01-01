@@ -212,7 +212,7 @@ public abstract class AbstractPublishTask extends PublishTaskDelegate
                         // java project
                         final IPath eclipseProjectPath = pluginsDir.append(getName(mod) + ".eclipseproject"); //$NON-NLS-1$
                         final Properties props = new Properties();
-                        final CPENode node = CPENodeFactory.create(mod.getProject());
+                        final CPENode node = McEclipsePlugin.getNodeFactory().create(mod.getProject());
                         props.setProperty("classes", node.getCpFolders().get(0)); //$NON-NLS-1$
                         final List<String> additionalCP = new ArrayList<>();
                         if (node.getCpFolders().size() > 1)
