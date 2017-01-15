@@ -5,8 +5,10 @@
 package eu.xworlds.mceclipse.server.internal;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
@@ -59,27 +61,59 @@ public class CPENodeFactory implements IMavenProjectChangedListener
         {
             final Set<IProject> knownProjects = new HashSet<>();
             final Set<String> knownJars = new HashSet<>();
+            final List<CreateTask> lazyInit = new ArrayList<>();
             try
             {
-                this.cachedNodes.put(project.getFullPath(), createCPENodeForProject(project, knownProjects, knownJars));
+                this.cachedNodes.put(project.getFullPath(), createCPENodeForProject(project, knownProjects, knownJars, lazyInit));
             }
             catch (IOException ex)
             {
                 throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "problems calculating cpe nodes", ex));
             }
+            while (lazyInit.size() > 0)
+            {
+                final CreateTask[] tasks = lazyInit.toArray(new CreateTask[lazyInit.size()]);
+                lazyInit.clear();
+                for (final CreateTask task : tasks)
+                {
+                    try
+                    {
+                        task.run();
+                    }
+                    catch (IOException ex)
+                    {
+                        throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "problems calculating cpe nodes", ex));
+                    }
+                }
+            }
         }
         return this.cachedNodes.get(project.getFullPath());
+    }
+    
+    /**
+     * Creation task
+     * @author mepeisen
+     */
+    private interface CreateTask
+    {
+        /**
+         * create node for project
+         * @throws CoreException
+         * @throws IOException
+         */
+        void run() throws CoreException, IOException;
     }
 
     /**
      * @param project
      * @param knownProjects
      * @param knownJars 
+     * @param lazyInit 
      * @return node
      * @throws CoreException
      * @throws IOException
      */
-    private static CPENode createCPENodeForProject(IProject project, final Set<IProject> knownProjects, Set<String> knownJars) throws CoreException, IOException
+    private static CPENode createCPENodeForProject(IProject project, final Set<IProject> knownProjects, Set<String> knownJars, List<CreateTask> lazyInit) throws CoreException, IOException
     {
         if (knownProjects.add(project))
         {
@@ -119,128 +153,187 @@ public class CPENodeFactory implements IMavenProjectChangedListener
                 result.getCpFolders().add(ResourcesPlugin.getWorkspace().getRoot().getFolder(javaProject.getOutputLocation()).getLocation().toOSString());
                 
                 // dependencies
-                final IMavenProjectFacade mp = MavenPlugin.getMavenProjectRegistry().getProject(javaProject.getProject());
-                if (mp == null)
+                if (type == CPEModuleType.Library)
                 {
-                    // classic java project
-                    for (final IClasspathEntry cpe : javaProject.getRawClasspath())
-                    {
-                        if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
+                    lazyInit.add(new CreateTask() {
+                        
+                        @Override
+                        public void run() throws IOException, CoreException
                         {
-                            final String lib = cpe.getPath().toFile().getAbsolutePath();
-                            // Check for plugin.yml, create library entry
-                            if (!knownJars.contains(lib))
-                            {
-                                knownJars.add(lib);
-                                switch (detectType(lib))
-                                {
-                                    case BukkitJar:
-                                        result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.BukkitJar, null, lib));
-                                        break;
-                                    case BungeeJar:
-                                        result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.BungeeJar, null, lib));
-                                        break;
-                                    case SpigotJar:
-                                        result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.SpigotJar, null, lib));
-                                        break;
-                                    case Plugin:
-                                        result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.UnknownPlugin, null, lib));
-                                        break;
-                                    default:
-                                    case Jar:
-                                        result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.Library, null, lib));
-                                        break;
-                                }
-                            }
+                            addChildren(knownProjects, knownJars, javaProject, result, lazyInit);
                         }
-                        else if (cpe.getEntryKind() == IClasspathEntry.CPE_PROJECT)
-                        {
-                            final IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
-                            final CPENode child = createCPENodeForProject(prj, knownProjects, knownJars);
-                            if (child != null)
-                            {
-                                result.getChildren().add(child);
-                            }
-                        }
-                    }
+                    });
                 }
                 else
                 {
-                    // maven project; get classpath
-                    try
-                    {
-                        final IClasspathManager cpm = MavenJdtPlugin.getDefault().getBuildpathManager();
-                        final IClasspathEntry[] entries = cpm.getClasspath(javaProject.getProject(), 1, true, new NullProgressMonitor()); // 1 == runtime || provided || system
-                        for (final IClasspathEntry cpe : entries)
-                        {
-                            // check for provided entry
-                            boolean isProvided = false;
-                            boolean isRuntime = false;
-                            for (final IClasspathAttribute attribute : cpe.getExtraAttributes())
-                            {
-                                if ("maven.scope".equals(attribute.getName())) //$NON-NLS-1$
-                                {
-                                    isProvided = "provided".equals(attribute.getValue()); //$NON-NLS-1$
-                                    isRuntime = "runtime".equals(attribute.getValue()); //$NON-NLS-1$
-                                    break;
-                                }
-                            }
-                            
-                            if (cpe.getEntryKind() == IClasspathEntry.CPE_PROJECT)
-                            {
-                                final IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
-                                final CPENode child = createCPENodeForProject(prj, knownProjects, knownJars);
-                                if (child != null)
-                                {
-                                    child.setProvided(isProvided);
-                                    child.setRuntime(isRuntime);
-                                    result.getChildren().add(child);
-                                }
-                            }
-                            else if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
-                            {
-                                final String lib = cpe.getPath().toFile().getAbsolutePath();
-                                // Check for plugin.yml, create library entry
-                                if (!knownJars.contains(lib))
-                                {
-                                    knownJars.add(lib);
-                                    CPENode child = null;
-                                    switch (detectType(lib))
-                                    {
-                                        case BukkitJar:
-                                            child = new CPENode(CPENodeType.JarFile, CPEModuleType.BukkitJar, null, lib);
-                                            break;
-                                        case BungeeJar:
-                                            child = new CPENode(CPENodeType.JarFile, CPEModuleType.BungeeJar, null, lib);
-                                            break;
-                                        case SpigotJar:
-                                            child = new CPENode(CPENodeType.JarFile, CPEModuleType.SpigotJar, null, lib);
-                                            break;
-                                        case Plugin:
-                                            child = new CPENode(CPENodeType.JarFile, CPEModuleType.UnknownPlugin, null, lib);
-                                            break;
-                                        default:
-                                        case Jar:
-                                            child = new CPENode(CPENodeType.JarFile, CPEModuleType.Library, null, lib);
-                                            break;
-                                    }
-                                    child.setProvided(isProvided);
-                                    child.setRuntime(isRuntime);
-                                    result.getChildren().add(child);
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Error fetching maven classpath", ex));
-                    }
+                    addChildren(knownProjects, knownJars, javaProject, result, lazyInit);
                 }
                 
                 return result;
             }
         }
         return null;
+    }
+
+    /**
+     * @param knownProjects
+     * @param knownJars
+     * @param javaProject
+     * @param result
+     * @param lazyInit 
+     * @throws JavaModelException
+     * @throws IOException
+     * @throws CoreException
+     */
+    static void addChildren(final Set<IProject> knownProjects, Set<String> knownJars, final IJavaProject javaProject, final CPENode result, List<CreateTask> lazyInit)
+            throws JavaModelException, IOException, CoreException
+    {
+        final IMavenProjectFacade mp = MavenPlugin.getMavenProjectRegistry().getProject(javaProject.getProject());
+        if (mp == null)
+        {
+            // classic java project
+            addJavaChildren(knownProjects, knownJars, javaProject, result, lazyInit);
+        }
+        else
+        {
+            // maven project; get classpath
+            addMavenChildren(knownProjects, knownJars, javaProject, result, lazyInit);
+        }
+    }
+
+    /**
+     * @param knownProjects
+     * @param knownJars
+     * @param javaProject
+     * @param result
+     * @param lazyInit 
+     * @throws CoreException
+     */
+    private static void addMavenChildren(final Set<IProject> knownProjects, Set<String> knownJars, final IJavaProject javaProject, final CPENode result, List<CreateTask> lazyInit) throws CoreException
+    {
+        try
+        {
+            final IClasspathManager cpm = MavenJdtPlugin.getDefault().getBuildpathManager();
+            final IClasspathEntry[] entries = cpm.getClasspath(javaProject.getProject(), 1, true, new NullProgressMonitor()); // 1 == runtime || provided || system
+            for (final IClasspathEntry cpe : entries)
+            {
+                // check for provided entry
+                boolean isProvided = false;
+                boolean isRuntime = false;
+                for (final IClasspathAttribute attribute : cpe.getExtraAttributes())
+                {
+                    if ("maven.scope".equals(attribute.getName())) //$NON-NLS-1$
+                    {
+                        isProvided = "provided".equals(attribute.getValue()); //$NON-NLS-1$
+                        isRuntime = "runtime".equals(attribute.getValue()); //$NON-NLS-1$
+                        break;
+                    }
+                }
+                
+                if (cpe.getEntryKind() == IClasspathEntry.CPE_PROJECT)
+                {
+                    final IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
+                    final CPENode child = createCPENodeForProject(prj, knownProjects, knownJars, lazyInit);
+                    if (child != null)
+                    {
+                        child.setProvided(isProvided);
+                        child.setRuntime(isRuntime);
+                        result.getChildren().add(child);
+                    }
+                }
+                else if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
+                {
+                    final String lib = cpe.getPath().toFile().getAbsolutePath();
+                    // Check for plugin.yml, create library entry
+                    if (!knownJars.contains(lib))
+                    {
+                        knownJars.add(lib);
+                        CPENode child = null;
+                        switch (detectType(lib))
+                        {
+                            case BukkitJar:
+                                child = new CPENode(CPENodeType.JarFile, CPEModuleType.BukkitJar, null, lib);
+                                break;
+                            case BungeeJar:
+                                child = new CPENode(CPENodeType.JarFile, CPEModuleType.BungeeJar, null, lib);
+                                break;
+                            case SpigotJar:
+                                child = new CPENode(CPENodeType.JarFile, CPEModuleType.SpigotJar, null, lib);
+                                break;
+                            case Plugin:
+                                child = new CPENode(CPENodeType.JarFile, CPEModuleType.UnknownPlugin, null, lib);
+                                break;
+                            default:
+                            case Jar:
+                                child = new CPENode(CPENodeType.JarFile, CPEModuleType.Library, null, lib);
+                                break;
+                        }
+                        child.setProvided(isProvided);
+                        child.setRuntime(isRuntime);
+                        result.getChildren().add(child);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new CoreException(new Status(IStatus.ERROR, McEclipsePlugin.PLUGIN_ID, "Error fetching maven classpath", ex));
+        }
+    }
+
+    /**
+     * @param knownProjects
+     * @param knownJars
+     * @param javaProject
+     * @param result
+     * @param lazyInit 
+     * @throws JavaModelException
+     * @throws IOException
+     * @throws CoreException
+     */
+    private static void addJavaChildren(final Set<IProject> knownProjects, Set<String> knownJars, final IJavaProject javaProject, final CPENode result, List<CreateTask> lazyInit)
+            throws JavaModelException, IOException, CoreException
+    {
+        for (final IClasspathEntry cpe : javaProject.getRawClasspath())
+        {
+            if (cpe.getEntryKind() == IClasspathEntry.CPE_LIBRARY)
+            {
+                final String lib = cpe.getPath().toFile().getAbsolutePath();
+                // Check for plugin.yml, create library entry
+                if (!knownJars.contains(lib))
+                {
+                    knownJars.add(lib);
+                    switch (detectType(lib))
+                    {
+                        case BukkitJar:
+                            result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.BukkitJar, null, lib));
+                            break;
+                        case BungeeJar:
+                            result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.BungeeJar, null, lib));
+                            break;
+                        case SpigotJar:
+                            result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.SpigotJar, null, lib));
+                            break;
+                        case Plugin:
+                            result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.UnknownPlugin, null, lib));
+                            break;
+                        default:
+                        case Jar:
+                            result.getChildren().add(new CPENode(CPENodeType.JarFile, CPEModuleType.Library, null, lib));
+                            break;
+                    }
+                }
+            }
+            else if (cpe.getEntryKind() == IClasspathEntry.CPE_PROJECT)
+            {
+                final IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
+                final CPENode child = createCPENodeForProject(prj, knownProjects, knownJars, lazyInit);
+                if (child != null)
+                {
+                    result.getChildren().add(child);
+                }
+            }
+        }
     }
     
     /**
