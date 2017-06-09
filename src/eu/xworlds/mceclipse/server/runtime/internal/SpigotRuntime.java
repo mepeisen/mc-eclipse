@@ -62,6 +62,8 @@ public class SpigotRuntime extends AbstractRuntime implements ISpigotRuntimeWork
             return new Spigot1112VersionHandler();
         if (id.contains("1_11")) //$NON-NLS-1$
             return new Spigot111VersionHandler();
+        if (id.contains("1_12")) //$NON-NLS-1$
+            return new Spigot111VersionHandler();
         throw new IllegalStateException("Unknown runtime version: " + id);
     }
     

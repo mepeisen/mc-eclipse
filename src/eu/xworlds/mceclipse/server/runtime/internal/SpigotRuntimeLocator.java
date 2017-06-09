@@ -40,6 +40,7 @@ public class SpigotRuntimeLocator extends RuntimeLocatorDelegate
             "eu.xworlds.mceclipse.server.runtime.spigot.1_10_2", //$NON-NLS-1$
             "eu.xworlds.mceclipse.server.runtime.spigot.1_11", //$NON-NLS-1$
             "eu.xworlds.mceclipse.server.runtime.spigot.1_11_2", //$NON-NLS-1$
+            "eu.xworlds.mceclipse.server.runtime.spigot.1_12", //$NON-NLS-1$
     };
     
     @Override
